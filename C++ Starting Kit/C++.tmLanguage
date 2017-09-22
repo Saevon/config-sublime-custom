@@ -786,6 +786,13 @@
 			<key>name</key>
 			<string>variable.parameter.preprocessor.c</string>
 		</dict>
+		<!-- _t variables -->
+		<dict>
+			<key>match</key>
+			<string>\b([a-zA-Z0-9_]+_t)\b</string>
+			<key>name</key>
+			<string>storage.type.user.c++</string>
+		</dict>
 
 <!---------------------------------------------------
 	Period - CCpp
