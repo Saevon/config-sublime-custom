@@ -142,7 +142,8 @@ contexts:
         - match: '-->'
           scope: punctuation.definition.comment.end.xml
           pop: true
-        - match: '-{2,}'
+        # Saevon: Fixes priorities, invalid double hyphens don't ruin a ending comment e.g. ------>
+        - match: '-{2,}(?!-?>)'
           scope: invalid.illegal.double-hyphen-within-comment.xml
   internal-subset:
     - match: \[
