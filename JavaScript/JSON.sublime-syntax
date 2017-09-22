@@ -19,11 +19,11 @@ contexts:
     - include: value
   array:
     - match: '\['
-      scope: punctuation.definition.array.begin.json
+      scope: punctuation.section.array.begin.json
       push:
         - meta_scope: meta.structure.array.json
         - match: '\]'
-          scope: punctuation.definition.array.end.json
+          scope: punctuation.section.array.end.json
           pop: true
         - include: value
         - match: ","
@@ -31,7 +31,7 @@ contexts:
         - match: '[^\s\]]'
           scope: invalid.illegal.expected-array-separator.json
   comments:
-    - match: /\*\*
+    - match: /\*\*(?!/)
       scope: punctuation.definition.comment.json
       push:
         - meta_scope: comment.block.documentation.json
@@ -77,16 +77,30 @@ contexts:
   object:
     # a JSON object
     - match: '\{'
-      scope: punctuation.definition.dictionary.begin.json
+      scope: punctuation.section.dictionary.begin.json
       push:
         - meta_scope: meta.structure.dictionary.json
         - match: '\}'
-          scope: punctuation.definition.dictionary.end.json
+          scope: punctuation.section.dictionary.end.json
           pop: true
+        - match: '"'
+          scope: punctuation.definition.string.begin.json
+          push:
+            - meta_scope: meta.structure.dictionary.key.json string.quoted.double.json
+            - include: inside-string
         - include: comments
-
         - include: dictPair
-
+        - match: ":"
+          scope: punctuation.separator.dictionary.key-value.json
+          push:
+            - meta_scope: meta.structure.dictionary.value.json
+            - match: '(,)|(?=\})'
+              captures:
+                1: punctuation.separator.dictionary.pair.json
+              pop: true
+            - include: value
+            - match: '[^\s,]'
+              scope: invalid.illegal.expected-dictionary-separator.json
         - match: '[^\s\}]'
           scope: invalid.illegal.expected-dictionary-separator.json
   dictPair:
@@ -118,13 +132,17 @@ contexts:
   string:
     - match: '"'
       scope: punctuation.definition.string.begin.json
-      push:
-        - meta_scope: string.quoted.double.json
-        - include: stringInternals
-        - match: '"'
-          scope: punctuation.definition.string.end.json
-          pop: true
-  stringInternals:
+      push: inside-string
+  inside-string:
+    - meta_scope: string.quoted.double.json
+    - match: '"'
+      scope: punctuation.definition.string.end.json
+      pop: true
+    - include: string-escape
+    - match: $\n?
+      scope: invalid.illegal.unclosed-string.json
+      pop: true
+  string-escape:
     - match: |-
         (?x:                # turn on extended mode
           \\                # a literal backslash
