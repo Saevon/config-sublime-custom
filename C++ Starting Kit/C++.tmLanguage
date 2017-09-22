@@ -556,7 +556,7 @@
 			<key>match</key>
 			<string>\w+(?=\()</string>
 			<key>name</key>
-			<string>meta.function.c variable.function.c</string>
+			<string>meta.function.c entity.name.function.c</string>
 		</dict>
 		<dict>
 			<key>match</key>
@@ -564,22 +564,21 @@
 			<key>name</key>
 			<string>meta.function.c meta.block.c meta.function-call.c support.function.any-method.c</string>
 		</dict>
-		<!-- Saevon: Edited to separate the operator out -->
 		<dict>
 			<key>match</key>
-			<string>\:\:</string>
-			<key>name</key>
-			<string>keyword.operator.ccpp</string>
-		</dict>
-		<dict>
-			<key>match</key>
-			<string>\w+(?=\:\:)</string>
+			<string>(?&lt;=\:\:)\w+</string>
 			<key>name</key>
 			<string>meta.function.c entity.name.function.c</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>(?&lt;=\:\:)\w+</string>
+			<string>\w+\:\:</string>
+			<key>name</key>
+			<string>meta.function.c entity.name.function.c</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\:\:\w+</string>
 			<key>name</key>
 			<string>meta.function.c entity.name.function.c</string>
 		</dict>
