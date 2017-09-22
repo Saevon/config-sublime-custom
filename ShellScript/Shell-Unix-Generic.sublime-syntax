@@ -15,7 +15,7 @@ file_extensions:
   - .bashrc
   - .profile
   - .textmate_init
-  # Custom Saevon Extensions
+  # Saevon: New Highlights
   - .env
 first_line_match: '^#!.*\b(bash|zsh|sh|tcsh)|^#\s*-\*-[^*]*mode:\s*shell-script[^*]*-\*-'
 scope: source.shell
@@ -37,6 +37,7 @@ contexts:
     - include: pathname
     - include: keyword
     - include: support
+    # Saevon: New Highlights
     - include: flag
     - include: constant
     - include: commonPath
@@ -361,6 +362,7 @@ contexts:
   keyword:
     - match: \b(?:if|then|else|elif|fi|for|in|do|done|select|case|continue|esac|while|until|return)\b
       scope: keyword.control.shell
+    # Saevon: Moved some things here
     - match: '(?<![-/])\b(?:export|declare|typeset|local|readonly)\b'
       scope: storage.modifier.shell
   list:
@@ -483,6 +485,7 @@ contexts:
 
   pathname:
     - match: '(?<=[a-zA-Z0-9_]) *= *(?=\s*$|[^\s])'
+    # Saevon: Improved Spacing around assignment
       scope: keyword.operator.assign.shell
     # Saevon: adds ~+ and ~-
     - match: (?<=\s|:|=|^)~[-+]?
