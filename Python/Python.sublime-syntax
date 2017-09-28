@@ -220,6 +220,17 @@ contexts:
       scope: punctuation.separator.with-resources.python
       set: with-body
     - include: name
+    # Saevon: Adds tuples to with-as syntax
+    - match: \(
+      scope: punctuation.section.group.begin.python
+      push:
+        - meta_scope: meta.group.python
+        - match: \)
+          scope: punctuation.section.group.end.python
+          set: after-expression
+        - match: ','
+          scope: punctuation.separator.tuple.python
+        - include: name
 
   expressions-common:
     - include: comments
