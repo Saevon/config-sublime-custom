@@ -128,6 +128,8 @@ contexts:
     - match: \b(true|false)\b
       scope: constant.other.makefile
     - include: variable
+
+    # Saevon: Adds actual shell syntax
     - include: Packages/ShellScript/Shell-Unix-Generic.sublime-syntax
 
 

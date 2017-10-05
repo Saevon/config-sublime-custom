@@ -36,8 +36,9 @@ contexts:
     - include: pathname
     - include: keyword
     - include: support
-    - include: constants
-    - include: commonPaths
+    - include: constant
+    - include: commonPath
+    - include: flag
   comment:
     - match: '(?<!\S)(#)(?!\{).*$\n?'
       scope: comment.line.number-sign.shell
@@ -455,15 +456,24 @@ contexts:
       scope: constant.numeric.other.shell
     - match: \d+
       scope: constant.numeric.integer.shell
+
   # Saevon: Adds constants
-  constants:
+  constant:
     - match: '\b((25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\b'
       scope: constant.numeric.ip.shell
     - match: '\b(\d+)\b'
       scope: constant.numeric.integer.shell
-  commonPaths:
-    - match: '\B(/dev/(full|null|random|urandom|zero))\b'
+  # Saevon: Adds Commonly used paths
+  commonPath:
+    - match: '(/dev/(full|null|random|urandom|zero))\b'
       scope: constant.other.path.shell
+  # Saevon: Adds flags
+  flag:
+    - match: (?> )-[a-z]+
+      scope: support.flag.shell
+    - match: (?i)(?> )--[a-z0-9]([a-z0-9]|-[a-z0-9])*
+      scope: support.flag.shell
+
   pathname:
     - match: '(?<=[a-zA-Z0-9_]) *= *(?=\s*$|[^\s])'
       scope: keyword.operator.assign.shell
