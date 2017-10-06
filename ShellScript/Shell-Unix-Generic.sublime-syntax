@@ -566,8 +566,11 @@ contexts:
     - match: (?<=^|\s)(?::|\.)(?=\s|;|&|$)
       scope: support.function.builtin.shell
     # Saevon: Modified to match builtin better (removed scripts)
-    - match: '(?<![-/])\b(?:alias|bg|bind|break|builtin|caller|command|compgen|complete|dirs|disown|echo|enable|eval|exec|exit|export|false|fc|fg|function|getopts|hash|help|history|jobs|kill|let|logout|popd|printf|pushd|read|readonly|set|shift|shopt|source|suspend|test|times|trap|true|type|ulimit|umask|unalias|unset|wait)\b'
+    - match: '(?<![-/])\b(?:alias|bg|bind|break|builtin|caller|command|compgen|complete|dirs|disown|echo|enable|eval|exec|exit|export|fc|fg|function|getopts|hash|help|history|jobs|kill|let|logout|popd|printf|pushd|read|readonly|set|shift|shopt|source|suspend|test|times|trap|type|ulimit|umask|unalias|unset|wait)\b'
       scope: support.function.builtin.shell
+    # Saevon: Moved true and false as constants
+    - match: \b(true|false)\b
+      scope: constant.language.shell
   variable:
     - match: '(\$)[-*@#?$!0_]'
       scope: variable.other.special.shell
