@@ -465,7 +465,9 @@ contexts:
       scope: constant.numeric.integer.shell
   # Saevon: Adds Commonly used paths
   commonPath:
-    - match: '(/dev/(full|null|random|urandom|zero))\b'
+    - match: '(/dev/fd/[0-9]+|/dev/?|/dev/fd/?)'
+      scope: constant.other.path.shell
+    - match: '(/dev/(full|null|random|urandom|zero|tty)?)\b'
       scope: constant.other.path.shell
   # Saevon: Adds flags
   flag:
