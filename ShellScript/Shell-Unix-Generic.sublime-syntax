@@ -36,9 +36,9 @@ contexts:
     - include: pathname
     - include: keyword
     - include: support
+    - include: flag
     - include: constant
     - include: commonPath
-    - include: flag
   comment:
     - match: '(?<!\S)(#)(?!\{).*$\n?'
       scope: comment.line.number-sign.shell
@@ -469,9 +469,9 @@ contexts:
       scope: constant.other.path.shell
   # Saevon: Adds flags
   flag:
-    - match: (?> )-[a-z]+
+    - match: (?i)(?<= |^)-[a-z0-9]+
       scope: support.flag.shell
-    - match: (?i)(?> )--[a-z0-9]([a-z0-9]|-[a-z0-9])*
+    - match: (?i)(?<= |^)--[a-z0-9]([a-z0-9]|-[a-z0-9])*
       scope: support.flag.shell
 
   pathname:
