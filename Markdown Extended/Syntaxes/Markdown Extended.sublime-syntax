@@ -1096,7 +1096,7 @@ contexts:
   image-inline:
     - match: |-
         (?x:
-         \!              # Images start with !
+         (\!)              # Images start with !
          (\[)((?<square>[^\[\]\\]|\\.|\[\g<square>*+\])*+)(\])
                        # Match the link text.
          ([ ])?            # Space not allowed
@@ -1113,23 +1113,25 @@ contexts:
         )
       scope: meta.image.inline.markdown
       captures:
-        1: punctuation.definition.string.begin.markdown
-        2: string.other.link.description.markdown
-        4: punctuation.definition.string.end.markdown
-        5: invalid.illegal.whitespace.markdown
+        1: keyword
+        2: punctuation.definition.string.begin.markdown
+        3: string.other.link.description.markdown
+        5: punctuation.definition.string.end.markdown
+        6: invalid.illegal.whitespace.markdown
         # Saevon: Adds the {filename}
-        6: constant.language.markdown
-        7: punctuation.definition.metadata.markdown
-        8: punctuation.definition.link.markdown
-        9: markup.underline.link.image.markdown
-        10: punctuation.definition.link.markdown
-        11: string.other.link.description.title.markdown
-        12: punctuation.definition.string.markdown
+        7: punctuation.definition.link-metadata.markdown
+        8: constant.language.markdown
+        # 8: punctuation.definition.metadata.markdown
+        9: punctuation.definition.link.markdown
+        10: markup.underline.link.image.markdown
+        11: punctuation.definition.link.markdown
+        12: string.other.link.description.title.markdown
         13: punctuation.definition.string.markdown
-        14: string.other.link.description.title.markdown
-        15: punctuation.definition.string.markdown
+        14: punctuation.definition.string.markdown
+        15: string.other.link.description.title.markdown
         16: punctuation.definition.string.markdown
-        17: punctuation.definition.metadata.markdown
+        17: punctuation.definition.string.markdown
+        18: punctuation.definition.link-metadata.markdown
   image-ref:
     - match: '\!(\[)((?<square>[^\[\]\\]|\\.|\[\g<square>*+\])*+)(\])[ ]?(\[)(.*?)(\])'
       scope: meta.image.reference.markdown
