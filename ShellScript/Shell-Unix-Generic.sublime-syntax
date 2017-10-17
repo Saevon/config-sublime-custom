@@ -21,6 +21,7 @@ first_line_match: '^#!.*\b(bash|zsh|sh|tcsh)|^#\s*-\*-[^*]*mode:\s*shell-script[
 scope: source.shell
 contexts:
   main:
+    - include: history-ref
     - include: comment
     - include: pipeline
     - include: list
@@ -475,11 +476,16 @@ contexts:
       scope: support.flag.shell
     - match: (?i)(?<= |^)--[a-z0-9]([a-z0-9]|-[a-z0-9])*
       scope: support.flag.shell
+  # Adds History Constants
+  history-ref:
+    - match: '!(!|-?[0-9]+)\*?|!\*'
+      scope: constant.other.path.shell
 
   pathname:
     - match: '(?<=[a-zA-Z0-9_]) *= *(?=\s*$|[^\s])'
       scope: keyword.operator.assign.shell
-    - match: (?<=\s|:|=|^)~
+    # Saevon: adds ~+ and ~-
+    - match: (?<=\s|:|=|^)~[-+]?
       scope: keyword.operator.tilde.shell
     - match: \*|\?
       scope: keyword.operator.glob.shell
