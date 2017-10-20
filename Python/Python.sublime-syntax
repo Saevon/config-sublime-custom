@@ -73,7 +73,8 @@ contexts:
       scope: keyword.other.assert.python
     - match: \b(del)\b
       scope: keyword.other.del.python
-    - match: \b(print)\b(?! *([,.()\]}]))
+    # Saevon: Print should still look like a keyword when used as a function
+    - match: \b(print)\b
       scope: keyword.other.print.python
     - match: \b(exec)\b(?! *($|[,.()\]}]))
       scope: keyword.other.exec.python
