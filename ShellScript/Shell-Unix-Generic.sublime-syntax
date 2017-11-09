@@ -472,7 +472,7 @@ contexts:
       scope: constant.other.path.shell
   # Saevon: Adds flags
   flag:
-    - match: (?i)(?<= |^)-[a-z0-9]+
+    - match: (?i)(?<= |^)(-|\+)[a-z0-9@]+
       scope: support.flag.shell
     - match: (?i)(?<= |^)--[a-z0-9]([a-z0-9]|-[a-z0-9])*
       scope: support.flag.shell
