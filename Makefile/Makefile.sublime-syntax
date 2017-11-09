@@ -108,8 +108,9 @@ contexts:
         - match: (?<!\\)\\$\n
           scope: punctuation.separator.continuation.makefile
   at:
-    - match: ^\t+\@
-      scope: support.variable.makefile
+    - match: ^\t+(\@)
+      captures:
+        1: support.variable.makefile
   backtick:
     - match: "`"
       push:
