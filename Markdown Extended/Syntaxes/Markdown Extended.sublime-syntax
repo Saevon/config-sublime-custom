@@ -102,6 +102,18 @@ contexts:
         - match: '^\s*$'
           pop: true
     #--------------------------------------------------------------
+    # Saevon: Adds html support
+    - match: '(?=<[a-zA-Z_]+)'
+      push:
+      - include: scope:text.html.basic
+      - match: '/>'
+        pop: true
+      - match: '</[a-zA-Z_]+'
+        pop: true
+
+
+
+    #--------------------------------------------------------------
     - match: |-
         (?x)^
         (?= [ ]{,3}>.
