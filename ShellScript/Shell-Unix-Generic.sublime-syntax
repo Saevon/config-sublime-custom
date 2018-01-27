@@ -17,6 +17,16 @@ file_extensions:
   - .textmate_init
   # Saevon: New Highlights
   - .env
+  - .inputrc
+  - inputrc
+  - bash_aliases
+  - bash_functions
+  - bash_login
+  - bash_logout
+  - bash_profile
+  - bash_variables
+  - bashrc
+  - profile
 first_line_match: '^#!.*\b(bash|zsh|sh|tcsh)|^#\s*-\*-[^*]*mode:\s*shell-script[^*]*-\*-'
 scope: source.shell
 # Saevon: Adds start/end fixes for flags and keywords
