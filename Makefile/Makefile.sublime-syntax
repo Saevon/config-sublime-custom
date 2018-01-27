@@ -110,7 +110,7 @@ contexts:
   at:
     - match: ^\t+(\@)
       captures:
-        1: support.variable.makefile
+        1: support.flag.makefile
   backtick:
     - match: "`"
       push:
@@ -119,25 +119,28 @@ contexts:
           pop: true
         - include: scope:source.shell
   shell:
-    - match: '(?x) (?<=[\s\(])\b(?:for|in|do|done|while|if|then|fi|elif|read|echo|case|esac|exit|die|printf)\b'
-      scope: support.function.builtin.makefile
-    - match: '(?x) (?: \;\; | \; | \[\[ | \]\] | \&\& | \|\| | \! | = | > | < | & | \| )'
-      scope: keyword.operator.makefile
-    - match: '(?x) \b(?:cp|mv|rm|cat|ls|\[|\]|find|grep|awk|perl|mkdir|rmdir|cd|cwd|pwd|svn|git|hg|scp|make|ps|sed|python|ruby|setenv|export|echo|test|source|ln|touch)\b'
-      scope: support.function.makefile
+    # - match: '(?x) (?<=[\s\(])\b(?:for|in|do|done|while|if|then|fi|elif|read|echo|case|esac|exit|die|printf)\b'
+    #   scope: support.function.builtin.makefile
+    # - match: '(?x) (?: \;\; | \; | \[\[ | \]\] | \&\& | \|\| | \! | = | > | < | & | \| )'
+    #   scope: keyword.operator.makefile
+    # - match: '(?x) \b(?:cp|mv|rm|cat|ls|\[|\]|find|grep|awk|perl|mkdir|rmdir|cd|cwd|pwd|svn|git|hg|scp|make|ps|sed|python|ruby|setenv|export|echo|test|source|ln|touch)\b'
+    #   scope: support.function.makefile
     - include: line_continuation
-    - match: \b(true|false)\b
-      scope: constant.other.makefile
-    - include: variable
-
-    # Saevon: Adds actual shell syntax
-    - include: Packages/ShellScript/Shell-Unix-Generic.sublime-syntax
+    # - match: \b(true|false)\b
+    #   scope: constant.other.makefile
+    # - include: variable
+    - include: scope:source.shell
+      with_prototypes:
+        - match: '$'
+          pop: true
 
 
   string:
     - match: '(?<!\\)(["''])'
       push:
         - meta_scope: string.source.makefile
+        - match: '\$\$'
+          scope: constant.character.escape.makefile
         - match: (?<!\\)\1
           pop: true
         - include: string_escapes
@@ -146,8 +149,9 @@ contexts:
     - match: \\.
       scope: constant.character.escape.makefile
   line_continuation:
-    - match: \\\n
-      scope: punctuation.separator.continuation.makefile
+    # Saevon: Improves newline escaped characters
+    - match: \\(\n|$)
+      scope: constant.character.escape.makefile
   variable:
     - match: (?x) (\$\() (subst|patsubst|strip|findstring|filter|filter-out|sort|word|wordlist|words|firstword|lastword|dir|notdir|suffix|basename|addsuffix|addprefix|join|wildcard|realpath|abspath|if|or|and|foreach|file|call|value|eval|origin|flavor|error|warning|info|guile) \s
       captures:

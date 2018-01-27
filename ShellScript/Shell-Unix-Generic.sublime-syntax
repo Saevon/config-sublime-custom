@@ -19,8 +19,16 @@ file_extensions:
   - .env
 first_line_match: '^#!.*\b(bash|zsh|sh|tcsh)|^#\s*-\*-[^*]*mode:\s*shell-script[^*]*-\*-'
 scope: source.shell
+# Saevon: Adds start/end fixes for flags and keywords
+#    The start ones ignore / because you might have an absolute path
+variables:
+  start: '(?<![-.])\b'
+  end: '\b(?![=/.])'
+  nbstart: '(?<![-.])'
+  nbend: '(?![=/.])'
 contexts:
   main:
+    - include: keyword
     - include: history-ref
     - include: comment
     - include: pipeline
@@ -35,7 +43,6 @@ contexts:
     - include: herestring
     - include: redirection
     - include: pathname
-    - include: keyword
     - include: support
     # Saevon: New Highlights
     - include: flag
@@ -360,10 +367,11 @@ contexts:
           pop: true
         - include: main
   keyword:
-    - match: \b(?:if|then|else|elif|fi|for|in|do|done|select|case|continue|esac|while|until|return)\b
+    # Saevon: Ensures flags & paths don't trigger these keywords
+    - match: '{{start}}(?:if|then|else|elif|fi|for|in|do|done|select|case|continue|esac|while|until|return){{end}}'
       scope: keyword.control.shell
     # Saevon: Moved some things here
-    - match: '(?<![-/])\b(?:export|declare|typeset|local|readonly)\b'
+    - match: '{{start}}(?:export|declare|typeset|local|readonly|env){{end}}'
       scope: storage.modifier.shell
   list:
     - match: ;|&&|&|\|\|
@@ -406,7 +414,8 @@ contexts:
             1: keyword.control.shell
           pop: true
         - include: main
-    - match: '\b(select)\s+((?:[^\s\\]|\\.)+)\b'
+    # Saevon: Ensures flags & paths don't trigger these keywords
+    - match: '{{start}}(select)\s+((?:[^\s\\]|\\.)+){{end}}'
       captures:
         1: keyword.control.shell
         2: variable.other.loop.shell
@@ -468,9 +477,9 @@ contexts:
       scope: constant.numeric.integer.shell
   # Saevon: Adds Commonly used paths
   commonPath:
-    - match: '(/dev/fd/[0-9]+|/dev/?|/dev/fd/?)'
+    - match: '(/dev/(full|null|random|urandom|zero|tty))\b'
       scope: constant.other.path.shell
-    - match: '(/dev/(full|null|random|urandom|zero|tty)?)\b'
+    - match: '(/dev/fd/[0-9]+|/dev/?|/dev/fd/?)'
       scope: constant.other.path.shell
   # Saevon: Adds flags
   flag:
@@ -478,15 +487,21 @@ contexts:
       scope: support.flag.shell
     - match: (?i)(?<= |^)--[a-z0-9]([a-z0-9]|-[a-z0-9])*
       scope: support.flag.shell
+    - match: (?i)(?<= |^)--
+      scope: support.flag.shell
   # Adds History Constants
   history-ref:
     - match: '!(!|-?[0-9]+)\*?|!\*'
-      scope: constant.other.path.shell
+      scope: constant.other.shell
 
   pathname:
-    - match: '(?<=[a-zA-Z0-9_]) *= *(?=\s*$|[^\s])'
     # Saevon: Improved Spacing around assignment
+    - match: '(?<=[a-zA-Z0-9_])(?: *)[+]?='
       scope: keyword.operator.assign.shell
+    # Saevon: Adds more operators
+    - match: '=='
+      scope: keyword.operator.logical.shell
+
     # Saevon: adds ~+ and ~-
     - match: (?<=\s|:|=|^)~[-+]?
       scope: keyword.operator.tilde.shell
@@ -504,19 +519,68 @@ contexts:
           pop: true
         - include: main
   pipeline:
-    - match: '\b(clang\+\+|g\+\+)'
-      scope: keyword.other.shell
+    #---------------------------------------------------------------
+    # Installers
+
+    # Saevon: Adds args for cabal
+    - match: '{{start}}(cabal)( *(bench|build|check|clean|configure|copy|exec|fetch|freeze|gen-bounds|get|haddock|hscolour|info|init|install|list|register|repl|report|run|sandbox|sdist|test|update|upload|user-config)){{end}}'
+      captures:
+        1: support.function.installer.shell
+        3: support.flag.shell
+    # Saevon: Adds args for npm
+    - match: '{{start}}(npm)( *(access|adduser|bin|bugs|c|cache|completion|config,|ddp|dedupe|deprecate|dist-tag|docs|doctor|edit,|explore|get|help|help-search|i|init|install|install-test|it|link|list|ln|login|logout|ls|outdated|owner|pack|ping|prefix|profile|prune|publish|rb|rebuild|repo|restart|root|run|run-script|s|se|search|set|shrinkwrap|star|stars|start|stop|t|team|test|token|tst|un|uninstall|unpublish|unstar,|up|update|v|version|view|whoami)){{end}}'
+      captures:
+        1: support.function.installer.shell
+        3: support.flag.shell
+
+    # Saevon: Adds args for brew
+    - match: '{{start}}(brew)( *(cask)? *((?:un)?install|search|info|home|options|update|upgrade|link|list|config|doctor|create|edit|help|cleanup))?{{end}}'
+      captures:
+        1: support.function.installer.shell
+        3: support.flag.shell
+        4: support.flag.shell
+    # Saevon: Adds args for pip
+    - match: '{{start}}((?:sys)?pip)( *((?:un)?install|download|freeze|list|show|check|search|wheel|hash|completion|help))?{{end}}'
+      captures:
+        1: support.function.installer.shell
+        3: support.flag.shell
+    - match: '{{start}}(easy_install){{end}}'
+      captures:
+        1: support.function.installer.shell
+    #---------------------------------------------------------------
+    # Saevon: Adds Languages
+    - match: '{{start}}(bash|gcc|ghc[i]?|jar|java|perl|lua|php|python[\d.]*|ruby){{end}}'
+      scope: support.function.language.shell
+    - match: '{{start}}(clang\+\+|g\+\+)'
+      scope: support.function.language.shell
+    # Saevon: Adds databases
+    - match: '{{start}}(sqlite3|mongodb|mysql|psql){{end}}'
+      scope: support.function.db.shell
+    # Saevon: Adds Version Control
+    - match: '{{start}}(git|hg|svn){{end}}'
+      scope: support.function.version_control.shell
+
+    - match: '{{start}}(sudo){{end}}'
+      scope: storage.modifier.shell
+
     # Saevon: Shrunk list to remove builtins, added some
-    - match: '\b(7za|apropos|apt-get|aptitude|ar|aspell|autoconf|awk|base64|basename|bash|bc|brew|bzip2|cal|cat|cc|cd|cfdisk|chgrp|chkconfig|chmod|chown|chroot|cksum|clear|cmake|cmp|comm|cp|cron|crontab|csh|lua|csplit|cut|date|dc|dd|ddrescue|declare|depmod|df|diff3?|dig|dir|dircolors|dirname|dmesg|du|egrep|eject|env|thtool|expand|expect|expr|fdformat|fdisk|fgrep|file|find|fmt|fold|format|free|fsck|ftp|fuser|gawk|gcc|git|grep|groupadd|groupdel|groupmd|groups|gzip|head|hg|hostname|iconv|id|ifconfig|ifdown|ifup|import|insmod|install|jar|java|join|kill|killall|kmod|less|link|llvm|ln|local|locate|logname|loout|look|lpc|lpr|lprint|lprintd|lprintq|lprm|ls|lsod|lsof|mail|make|man|md5sum|mkdir|mkfifo|mkisofs|mknod|mmv|modinfo|modprobe|more|most|mount|mtools|mtr|mutt|mv|mysql|netstat|nice|nl|nohup|notify-se|nslookup|nstat|op|open|openssl|paswd|paste|pathchk|perl|php|ping|pkill|pr|printcap|printenv|ps|pv|pwd|py|python[\d.]*|quota|quotachec|quotactl|ram|rar|rcp|readarray|reboot|remsync|renae|renice|rev|rm|rmdir|rmmod|rsync|ruby|scp|screen|sdiff|sed|select|seq|sftp|sh|shutdown|sleep|slocate|sort|split|sqlite3?|ssh|stat|strace|su|sudo|sum|susend|svn|sync|tail|tar|tcsh|tee|time|timeout|top|touch|tput|tr|tracerout|tsort|tty|umount|uname|unexpand|uniq|units|unrar|unshar|unil|updatedb|uptime|useradd|userdel|usermod|users|uudecode|uuencode|vmstat|watch|wc|wget|whatis|whereis|which|while|who|whoami|write|xargs|xdg-open|xz|yum|zip|zsh)\b'
+    # Saevon: Ensures flags & paths don't trigger these keywords
+    - match: '{{start}}(7za|apropos|apt-get|aptitude|ar|aspell|autoconf|ack|awk|base64|basename|bc|bzip2|cal|cat|cc|cd|cfdisk|chgrp|chkconfig|chmod|chown|chroot|cksum|clear|cmake|cmp|comm|cp|cron|crontab|csh|csplit|cut|date|dc|dd|ddrescue|declare|depmod|df|diff3?|dig|dir|dircolors|dirname|dmesg|du|egrep|eject|thtool|expand|expect|expr|fdformat|fdisk|fgrep|file|find|fmt|fold|format|free|fsck|ftp|fuser|gawk|grep|groupadd|groupdel|groupmd|groups|gzip|head|hostname|iconv|id|ifconfig|ifdown|ifup|import|insmod|install|join|kill|killall|kmod|less|link|llvm|ln|locate|logname|loout|look|lpc|lpr|lprint|lprintd|lprintq|lprm|ls|lsod|lsof|mail|make|man|md5sum|mkdir|mkfifo|mkisofs|mknod|mmv|modinfo|modprobe|more|most|mount|mtools|mtr|mutt|mv|netstat|nice|nl|nohup|notify-se|nslookup|nstat|op|open|openssl|paswd|paste|pathchk|ping|pkill|pr|printcap|printenv|ps|pv|pwd|quota|quotachec|quotactl|ram|rar|rcp|readarray|reboot|remsync|renae|renice|rev|rm|rmdir|rmmod|rsync|scp|screen|sdiff|sed|select|seq|sftp|sh|shutdown|sleep|slocate|sort|split|ssh|stat|strace|su|sudo|sum|susend|sync|tail|tar|tcsh|tee|time|timeout|top|touch|tput|tr|tracerout|tsort|tty|umount|uname|unexpand|uniq|units|unrar|unshar|unil|updatedb|uptime|useradd|userdel|usermod|users|uudecode|uuencode|vmstat|watch|wc|wget|whatis|whereis|which|while|who|whoami|write|xargs|xdg-open|xz|yum|zip|zsh){{end}}'
       scope: support.function.common.shell
-    - match: '\b(chsh|convert|noop|postconf|postfix|postsuper|postqueue|postmap)\b'
+    - match: '{{start}}(chsh|convert|postconf|postfix|postsuper|postqueue|postmap){{end}}'
       scope: support.function.misc.shell
-    - match: '\b(ed|emacs|nano|pico|vim?)\b'
+    - match: '{{start}}(ed|emacs|nano|pico|vim?){{end}}'
       scope: support.function.editor.shell
-    - match: '\b(defaults|launchctl|say|sips|xattr)\b'
+    - match: '{{start}}(defaults|launchctl|say|sips|xattr|pbcopy|pbpaste){{end}}'
       scope: support.function.osx.shell
     - match: "[|!]"
       scope: keyword.operator.pipe.shell
+    # Saevon: Adds noop constants
+    - match: '{{start}}(noop){{end}}'
+      scope: constant.other.shell
+    - match: '{{nbstart}}(:){{nbend}}'
+      scope: constant.other.shell
+
   redirection:
     - match: '[><]\('
       captures:
@@ -532,6 +596,9 @@ contexts:
       comment: "valid: &>word >&word >word [n]>&[n] [n]<word [n]>word [n]>>word [n]<&word (last one is duplicate)"
       scope: keyword.operator.redirect.shell
   string:
+    # Saevon: Allows you to escape an actual newline
+    - match: \\$
+      scope: constant.character.escape.shell
     - match: \\.
       scope: constant.character.escape.shell
     - match: "'"
@@ -577,14 +644,14 @@ contexts:
     - match: (?<=^|\s)(?::|\.)(?=\s|;|&|$)
       scope: support.function.builtin.shell
     # Saevon: Modified to match builtin better (removed scripts)
-    - match: '(?<![-/])\b(?:alias|bg|bind|break|builtin|caller|command|compgen|complete|dirs|disown|echo|enable|eval|exec|exit|export|fc|fg|function|getopts|hash|help|history|jobs|kill|let|logout|popd|printf|pushd|read|readonly|set|shift|shopt|source|suspend|test|times|trap|type|ulimit|umask|unalias|unset|wait)\b'
+    - match: '(?<![-/.])\b(?:alias|bg|bind|break|builtin|caller|command|compgen|complete|dirs|disown|echo|enable|eval|exec|exit|export|fc|fg|function|getopts|hash|help|history|jobs|kill|let|logout|popd|printf|pushd|read|readonly|set|setenv|shift|shopt|source|suspend|test|times|trap|type|ulimit|umask|unalias|unset|wait)\b'
       scope: support.function.builtin.shell
     # Saevon: Moved true and false as constants
     - match: \b(true|false)\b
       scope: constant.language.shell
   variable:
     - match: '(\$)[-*@#?$!0_]'
-      scope: variable.other.special.shell
+      scope: variable.language.shell
       captures:
         1: punctuation.definition.variable.shell
     - match: '(\$)[1-9]'
