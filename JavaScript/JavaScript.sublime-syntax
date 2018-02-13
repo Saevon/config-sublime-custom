@@ -1094,6 +1094,12 @@ contexts:
                 - match: '(?=\S)'
                   pop: true
         - include: method-declaration
+        - match: '(id)\s*:\s*([''"])([^''"]*)([''"])'
+          captures:
+            1: meta.object-literal.key.js
+            2: punctuation.string.begin.js
+            3: string.quoted.id.js
+            4: punctuation.string.end.js
         - match: "(?=\"|')"
           push:
             - meta_scope: meta.object-literal.key.js
