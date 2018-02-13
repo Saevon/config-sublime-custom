@@ -29,11 +29,18 @@ contexts:
         - include: line_continuation
         - match: (?<!\\)$(?=\n)
           pop: true
-    - match: '^(?=\S[^:]+::?(?!\=))'
+    # Saevon: Ensures the target can't be indented properly
+    - match: '^(?!\s)(?=[^:!]+(::?|!)(?!\=))'
       push:
         - meta_scope: entity.name.function.makefile
         - include: target
-        - match: (::?)(?!\=)
+          pop: true
+        # Saevon: Makes special targets be flags
+        - match: '(::|!)(?!\=)'
+          scope: support.flag.makefile
+          pop: true
+        # Saevon: Normal targets remain unchanged
+        - match: '(:)(?!\=)'
           pop: true
         - include: variable
     - match: (?<=:)\s*
@@ -70,7 +77,7 @@ contexts:
         - meta_scope: meta.function.body.makefile
         - match: ^(?!\t)
           pop: true
-        - include: at
+        - include: flags
         - include: string
         - include: variable
         - include: comment
@@ -107,8 +114,8 @@ contexts:
           pop: true
         - match: (?<!\\)\\$\n
           scope: punctuation.separator.continuation.makefile
-  at:
-    - match: ^\t+(\@)
+  flags:
+    - match: ^\t+([@+-]+)
       captures:
         1: support.flag.makefile
   backtick:
@@ -201,5 +208,10 @@ contexts:
     - match: \%
       scope: keyword.operator.percent.makefile
   target:
-    - match: (\.PHONY|\.SUFFIXES|\.DEFAULT|\.PRECIOUS|\.INTERMEDIATE|\.SECONDARY|\.SECONDARY|\.SECONDEXPANSION|\.DELETE_ON_ERROR|\.IGNORE|\.LOW_RESOLUTION_TIME|\.LOW_RESOLUTION_TIME|\.SILENT|\.EXPORT_ALL_VARIABLES|\.NOTPARALLEL|\.ONESHELL|\.POSIX|\bFORCE)\b
-      scope: constant.other.target.makefile
+    - match: '(\.PHONY|\.SUFFIXES|\.DEFAULT|\.PRECIOUS|\.INTERMEDIATE|\.SECONDARY|\.SECONDARY|\.SECONDEXPANSION|\.DELETE_ON_ERROR|\.IGNORE|\.LOW_RESOLUTION_TIME|\.LOW_RESOLUTION_TIME|\.SILENT|\.EXPORT_ALL_VARIABLES|\.NOTPARALLEL|\.ONESHELL|\.POSIX|\bFORCE)\b'
+      scope: entity.name.function.makefile constant.other.target.makefile
+
+
+
+
+
