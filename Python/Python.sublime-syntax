@@ -647,6 +647,9 @@ contexts:
             - include: expressions
     - include: function-parameters-tuple
     - include: illegal-names
+    # Saevon: Makes "self" and "cls" special
+    - match: '\b(self|cls|other)\b'
+      scope: variable.parameter.python variable.language.python
     - match: '{{identifier}}'
       scope: variable.parameter.python
     - include: line-continuation
@@ -678,6 +681,9 @@ contexts:
             - match: '(?=[,)=])'
               pop: true
         - include: illegal-names
+        # Saevon: Makes "self" and "cls" special
+        - match: '\b(self|cls|other)\b'
+          scope: variable.parameter.python variable.language.python
         - match: '{{identifier}}'
           scope: variable.parameter.python
         - include: line-continuation
@@ -799,6 +805,9 @@ contexts:
               pop: true
             - include: expressions
         - include: illegal-names
+        # Saevon: Makes "self" and "cls" special
+        - match: '\b(self|cls|other)\b'
+          scope: variable.parameter.python variable.language.python
         - match: '{{identifier}}'
           scope: variable.parameter.python
 
@@ -820,6 +829,12 @@ contexts:
     - include: keyword-arguments
     - include: function-parameters-tuple
     - include: illegal-names
+    # Saevon: Makes "self" and "cls" special
+    - match: '\b(self|cls|other)\b'
+      scope: variable.parameter.python variable.language.python
+      # Saevon: Makes _ special in lambdas
+    - match: _(?!{{identifier_continue}})
+      scope: variable.parameter.python variable.language.python
     - match: '{{identifier}}'
       scope: variable.parameter.python
     - match: '\S'
@@ -1047,7 +1062,8 @@ contexts:
       pop: true
 
   language-variables:
-    - match: \b(self|cls)\b
+    # Saevon: Makes "self" and "cls" special
+    - match: \b(self|cls|other)\b
       scope: variable.language.python
     - match: _(?!{{identifier_continue}})
       scope: variable.language.python
