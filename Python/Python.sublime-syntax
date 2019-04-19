@@ -29,6 +29,7 @@ variables:
   # We support unicode here because Python 3 is the future
   identifier_continue: '[[:alnum:]_]'
   identifier: '\b[[:alpha:]_]{{identifier_continue}}*\b'
+  # Saevon: Improves constants
   identifier_constant: '\b[[:upper:]_][[:upper:][:digit:]_]*\b'
   digitpart: (?:\d(?:_?\d)*)
   path: '({{identifier}} *\. *)*{{identifier}}'
@@ -82,9 +83,10 @@ contexts:
     - match: \b(del)\b
       scope: keyword.other.del.python
     # Saevon: Print should still look like a keyword when used as a function
-    - match: \b(print)\b
+    - match: \b(print)\b(?! *([,.)\[\]}]))
       scope: keyword.other.print.python
-    - match: \b(exec)\b(?! *($|[,.()\]}]))
+    # Saevon: Exec should still look like a keyword when used as a function
+    - match: \b(exec)\b(?! *([,.)\[\]}]))
       scope: keyword.other.exec.python
     - match: \b(return)\b
       scope: keyword.control.flow.return.python
@@ -104,6 +106,8 @@ contexts:
         - match: \.
           scope: invalid.illegal.unexpected-relative-import.python
         - include: import-alias
+        # Saevon: Adds Builtin modules
+        - include: builtin-import-modules
         - include: qualified-name
         - match: (?=\S)
           pop: true
@@ -157,6 +161,7 @@ contexts:
     - match: \b(as)\b
       scope: keyword.control.import.as.python
 
+  # Saevon: Adds Builtin modules
   builtin-import-modules:
     - match: |-
         (?x)\b(
@@ -179,6 +184,8 @@ contexts:
         - meta_scope: meta.import-path.python
         - match: '{{illegal_names}}\b'
           scope: invalid.illegal.name.python
+        # Saevon: Adds Builtin modules (to the from)
+        - include: builtin-import-modules
         - match: '{{identifier}}'
           scope: meta.import-name.python
         - match: \s*(\.) *(?:({{illegal_names}}\b)|({{identifier}}))
@@ -575,12 +582,13 @@ contexts:
 
             - match: (?={{path}})
               push:
+                # Saevon: Splits the inherited classes, highlighting only the actual CLASS
                 - match: '{{identifier}}(?: *(\.) *)'
-                  # Path
+                  # Saevon: Path
                   captures:
                     1: punctuation.accessor.dot.python
                 - match: '({{identifier}})(?! *(\.) *)'
-                  # Final inherited class
+                  # Saevon: Final inherited class
                   captures:
                     1: entity.other.inherited-class.python
                 - match: ''
@@ -901,11 +909,8 @@ contexts:
         )\b
       scope: support.function.builtin.python
 
+
   builtin-types:
-    - match: |-
-        (?x)\b(
-        )\b
-      scope: support.type.python
     # Saevon: Adds Collections module
     - match: |-
         (?x)\b(
@@ -922,17 +927,23 @@ contexts:
     - match: |-
         (?x)\b(
           Number|
-          Complex|Real|Rational|Integral|
+          Complex|Real|Rational|Integral
+        )\b
+      scope: support.type.python
+    - match: |-
+        (?x)\b(
           basestring|bool|buffer|bytearray|bytes|complex|dict|float|frozenset|int|
           list|long|memoryview|object|range|set|slice|str|tuple|unicode|xrange
         )\b
       scope: support.type.python
 
+
   name:
     - match: '(?={{identifier}})'
       push:
         - include: name-specials
-        - match: '\b_*\p{Lu}{3,}[\p{Lu}_]*\b' # require 3 upper-case letters for undotted names
+        # Saevon: Improves constants
+        - match: '{{identifier_constant}}'
           scope: variable.other.constant.python
         - include: generic-names
         - match: ''
@@ -944,7 +955,8 @@ contexts:
         1: punctuation.accessor.dot.python
       push:
         - include: dotted-name-specials
-        - match: '\b_*\p{Lu}+[\p{Lu}_]*\b'
+        # Saevon: Improves constants
+        - match: '{{identifier_constant}}'
           scope: variable.other.constant.python
         - include: generic-names
         - match: ''
@@ -995,6 +1007,8 @@ contexts:
 
   name-specials:
     - include: builtin-functions
+    # Saevon: Adds Builtin modules
+    - include: builtin-import-modules
     - include: builtin-types
     - include: builtin-exceptions
     - include: illegal-names
@@ -1017,6 +1031,7 @@ contexts:
     - include: generic-names
 
   generic-names:
+    # Saevon: Improves constants
     - match: '{{identifier_constant}}'
       scope: variable.other.constant.python
     - match: '{{identifier}}'
