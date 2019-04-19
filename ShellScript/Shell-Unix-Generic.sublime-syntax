@@ -344,11 +344,12 @@ contexts:
         1: keyword.operator.herestring.shell
         2: string.unquoted.herestring.shell
   interpolation:
+      # Saevon: Fixes interpolation being a string
     - match: '\$\({2}'
       captures:
-        0: punctuation.definition.string.begin.shell
+        0: keyword.other.shell
       push:
-        - meta_scope: string.other.math.shell
+        - meta_scope: meta.block.math.shell
         - match: '\){2}'
           captures:
             0: punctuation.definition.string.end.shell
@@ -356,12 +357,12 @@ contexts:
         - include: math
     - match: "`"
       captures:
-        0: punctuation.definition.string.begin.shell
+        0: keyword.other.shell
       push:
-        - meta_scope: string.interpolated.backtick.shell
+        - meta_scope: meta.block.interpolated.shell
         - match: "`"
           captures:
-            0: punctuation.definition.string.end.shell
+            0: keyword.other.shell
           pop: true
         # Saevon: Makes the escape sign invisible for characters that act as themselves
         - match: '(\\)([`\\])'
@@ -374,12 +375,12 @@ contexts:
         - include: main
     - match: \$\(
       captures:
-        0: punctuation.definition.string.begin.shell
+        0: keyword.other.shell
       push:
-        - meta_scope: string.interpolated.dollar.shell
+        - meta_scope: meta.block.interpolated.shell
         - match: \)
           captures:
-            0: punctuation.definition.string.end.shell
+            0: keyword.other.shell
           pop: true
         - include: main
   keyword:
@@ -601,7 +602,7 @@ contexts:
       scope: constant.other.shell
 
   redirection:
-    # Saevon: Fixes the scoping for process-redirection
+    # Saevon: Fixes redirection being a string
     - match: '[><]\('
       captures:
         0: keyword.operator.redirect.shell punctuation.definition.block.begin.shell
