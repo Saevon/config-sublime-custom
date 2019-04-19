@@ -47,6 +47,18 @@ variables:
       [bcdeEfFgGnosxX%]? # type
     )
   strftime_spec: '(?:%(?:[aAwdbBGmyYHIpMSfzZjuUVWcxX%]|-[dmHIMSj]))'
+
+  # Saevon: Adds builtin modules
+  builtin_import_modules: '(?x)\b(
+    __future__
+    |abc|ast|atexit|copy
+    |asynchat|asyncio|asyncore|multiprocessing|select|subprocess
+    |argparse|optparse|cProfile|inspect|logging|os|sys|setuptools|tempfile|traceback|warnings
+    |c?math|c?string|datetime|decimal|enum|fractions|hashlib|json|pickle|random|re|time|uuid
+    |typing|unittest
+
+    |collections|contextlib|itertools|functools|queue
+  )\b'
 contexts:
   main:
     - include: statements
@@ -106,8 +118,6 @@ contexts:
         - match: \.
           scope: invalid.illegal.unexpected-relative-import.python
         - include: import-alias
-        # Saevon: Adds Builtin modules
-        - include: builtin-import-modules
         - include: qualified-name
         - match: (?=\S)
           pop: true
@@ -163,17 +173,7 @@ contexts:
 
   # Saevon: Adds Builtin modules
   builtin-import-modules:
-    - match: |-
-        (?x)\b(
-          __future__|
-          abc|ast|atexit|copy
-          asynchat|asyncio|asyncore|multiprocessing|select|subprocess|
-          agparse|cProfile|inspect|logging|os|sys|tempfile|traceback|warnings|
-          c?math|datetime|decimal|enum|fractions|hashlib|json|pickle|random|re|time|uuid|
-          typing|unittest|
-
-          contextlib|itertools|functools|queue
-        )\b
+    - match: '{{builtin_import_modules}}'
       scope: support.module.python
 
   import-from-name:
@@ -583,6 +583,11 @@ contexts:
             - match: (?={{path}})
               push:
                 # Saevon: Splits the inherited classes, highlighting only the actual CLASS
+                - match: '({{builtin_import_modules}})(?: *(\.) *)'
+                  # Saevon: Path (that is a builtin module)
+                  captures:
+                    1: support.module.python
+                    2: punctuation.accessor.dot.python
                 - match: '{{identifier}}(?: *(\.) *)'
                   # Saevon: Path
                   captures:
@@ -982,6 +987,7 @@ contexts:
       push:
         - meta_scope: meta.qualified-name.python
         - include: name
+        - include: name-specials
         - include: dotted-name
         - match: ''
           pop: true
