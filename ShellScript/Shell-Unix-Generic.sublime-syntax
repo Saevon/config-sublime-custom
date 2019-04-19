@@ -36,7 +36,7 @@ variables:
   end: '\b(?![-=/.])'
   nbstart: '(?<![-.])'
   nbend: '(?![-=/.])'
-  path_chars: '[a-zA-Z-_]'
+  path_chars: '[a-zA-Z0-9-_]'
 contexts:
   main:
     - include: keyword
@@ -539,8 +539,25 @@ contexts:
           ))?
         )(/|(?!{{path_chars}}))'
       scope: constant.other.path.shell
-    - match: '(?<!{{path_chars}})(/home|/Users|root)(/|(?!{{path_chars}}))'
+    - match: '(?<!{{path_chars}})(/home|root)(/|(?!{{path_chars}}))'
       scope: constant.other.path.shell
+    # Saevon: Adds Mac Paths
+    - match: '(?<!{{path_chars}})/(Applications|Developer|Library|Network|System|Users|Volumes)(/|(?!{{path_chars}}))'
+      scope: constant.other.path.shell
+    - match: '(?x)(?<!{{path_chars}})
+        (/Users
+          (/([0-9a-zA-Z]+)
+            (/(?:
+              Applications
+              |Library(/Application(\\)?\sSupport)?
+              |Desktop|Documents|Downloads|Movies|Music|Pictures|Public
+            ))?
+          )?
+        )(/|(?!{{path_chars}}))'
+      captures:
+        0: constant.other.path.shell
+        3: variable.parameter.shell
+
   # Saevon: Adds flags
   flag:
     - match: (?i)(?<= |^)(-|\+)[a-z0-9@]+
