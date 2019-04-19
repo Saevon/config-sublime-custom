@@ -128,14 +128,13 @@ contexts:
   shell:
     - include: line_continuation
     # Saevon: adds proper shell support
-    - match: ''
-      embed: scope:source.shell
-      escape: '\n|$'
-    # - include: scope:source.shell
-      # embed_scope
-      # with_prototypes:
-        # - match: '$'
-        #   pop: true
+    # - match: ''
+    #   embed: scope:source.shell
+    #   escape: '\n|$'
+    - include: scope:source.shell
+      with_prototypes:
+        - match: '$'
+          pop: true
 
 
   string:
