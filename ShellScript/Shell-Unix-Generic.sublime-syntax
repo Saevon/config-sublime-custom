@@ -37,6 +37,7 @@ variables:
   nbstart: '(?<![-.])'
   nbend: '(?![-=/.])'
   path_chars: '[a-zA-Z0-9-_]'
+  flag_start: '(?: |^|=)'
 contexts:
   main:
     - include: keyword
@@ -560,11 +561,11 @@ contexts:
 
   # Saevon: Adds flags
   flag:
-    - match: (?i)(?<= |^)(-|\+)[a-z0-9@]+
+    - match: (?i)(?<={{flag_start}})--[a-z0-9]+([-_]+[a-z0-9]+)*
       scope: support.flag.shell
-    - match: (?i)(?<= |^)--[a-z0-9]([-_][a-z0-9])*
+    - match: (?i)(?<={{flag_start}})--
       scope: support.flag.shell
-    - match: (?i)(?<= |^)--
+    - match: (?i)(?<={{flag_start}})(-|\+)[a-z0-9@]+
       scope: support.flag.shell
   # Adds History Constants
   history-ref:
