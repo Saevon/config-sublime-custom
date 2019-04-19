@@ -23,6 +23,7 @@ variables:
   # We support unicode here because Python 3 is the future
   identifier_continue: '[[:alnum:]_]'
   identifier: '\b[[:alpha:]_]{{identifier_continue}}*\b'
+  identifier_constant: '\b[[:upper:]_][[:upper:][:digit:]_]*\b'
   digitpart: (?:\d(?:_?\d)*)
   path: '({{identifier}} *\. *)*{{identifier}}'
   sql_indicator: \s*(?:SELECT|INSERT|UPDATE|DELETE|CREATE|REPLACE|ALTER|WITH)\b
@@ -128,6 +129,7 @@ contexts:
                   pop: true
             - match: (?=\S)
               pop: true
+        - include: builtin-import-modules
         - include: qualified-name
         - match: (\.)
           scope: punctuation.accessor.dot.python
@@ -147,6 +149,21 @@ contexts:
   import-alias:
     - match: \b(as)\b
       scope: keyword.control.import.as.python
+
+  builtin-import-modules:
+    - match: |-
+        (?x)\b(
+          __future__|
+          abc|ast|atexit|copy
+          asynchat|asyncio|asyncore|multiprocessing|select|subprocess|
+          agparse|cProfile|inspect|logging|os|sys|tempfile|traceback|warnings|
+          c?math|datetime|decimal|enum|fractions|hashlib|json|pickle|random|re|time|uuid|
+          typing|unittest|
+
+          contextlib|itertools|functools|queue
+        )\b
+      scope: support.module.python
+
 
   block-statements:
     # async for ... in ...:
@@ -498,6 +515,11 @@ contexts:
               captures:
                 1: variable.parameter.class-inheritance.python
                 2: keyword.operator.assignment.python
+
+            # Saevon: Adds builtin matching
+            - include: builtin-exceptions
+            - include: builtin-types
+
             - match: (?={{path}})
               push:
                 - meta_scope: entity.other.inherited-class.python
@@ -783,6 +805,25 @@ contexts:
         	list|long|memoryview|object|range|set|slice|str|tuple|unicode|xrange
         )\b
       scope: support.type.python
+    # Saevon: Adds Collections module
+    - match: |-
+        (?x)\b(
+          Counter|defaultdict|deque|namedtuple|OrderedDict
+        )\b
+      scope: support.type.collections.python
+    # Saevon: Adds enums
+    - match: |-
+        (?x)\b(
+          (Int)?Enum
+        )\b
+      scope: support.type.enums.python
+    # Saevon: Adds Math
+    - match: |-
+        (?x)\b(
+          Number|
+          Complex|Real|Rational|Integral|
+        )\b
+      scope: support.type.python
 
   name:
     - match: '(?={{identifier}})'
@@ -872,6 +913,8 @@ contexts:
     - include: generic-names
 
   generic-names:
+    - match: '{{identifier_constant}}'
+      scope: variable.other.constant.python
     - match: '{{identifier}}'
       scope: meta.generic-name.python
 
