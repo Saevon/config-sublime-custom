@@ -14,6 +14,8 @@ file_extensions:
   - sublime-commands
   - sublime-macro
   - sublime-color-scheme
+  - .arcconfig
+  - .arclint
 scope: source.json
 contexts:
   main:
