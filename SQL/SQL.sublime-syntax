@@ -30,11 +30,25 @@ contexts:
         2: keyword.other.table.sql
         3: entity.name.function.sql
         4: keyword.other.cascade.sql
-    - match: (?i:\s*\b(alter)\s+(aggregate|conversion|database|domain|function|group|index|language|operator class|operator|procedure|rule|schema|sequence|table|tablespace|trigger|type|user|view)\s+)
+    - match: (?i:\s*\b(alter)\s+(aggregate|conversion|database|domain|function|group|index|language|operator class|operator|procedure|rule|schema|sequence|table|tablespace|trigger|user|view)\s+)
       scope: meta.alter.sql
       captures:
         1: keyword.other.create.sql
         2: keyword.other.table.sql
+    # Saevon: Adds alter type as a special format
+    - match: '(?xi:
+        \s*\b(alter)\s+(type)
+        (\s+(\w+)
+          (\s+(add\s+value))?
+        )?
+      )'
+      scope: meta.alter.sql
+      captures:
+        1: keyword.other.create.sql
+        2: keyword.other.table.sql
+        4: entity.name.type.sql
+        6: keyword.other.sql
+    - match: |-
     - match: |-
         (?xi)
 
@@ -117,6 +131,11 @@ contexts:
     # Saevon: Adds Booleans
     - match: \b(?i:AND|OR|NOT)\b
       scope: keyword.boolean.sql
+    # Saevon: Adds array operators
+    - match: \b(?i:any|all|array_length|unnest)\b
+      scope: support.function.array.sql
+    - match: \b(?i:ARRAY)\b
+      scope: support.other.sql storage.type.sql
     - match: (?i:\b(on|((is\s+)?not\s+)?null)\b)
       scope: keyword.other.DDL.create.II.sql
     - match: \b(?i:values)\b
@@ -133,8 +152,9 @@ contexts:
       scope: keyword.other.alias.sql
     - match: (?i)\b(DESC|ASC)\b
       scope: keyword.other.order.sql
+    # Saevon: Makes the star be a constant
     - match: \*
-      scope: keyword.operator.star.sql
+      scope: constant.other.star.sql
     - match: "[!<>]?=|<>|<|>"
       scope: keyword.operator.comparison.sql
     - match: '-|\+|/'
