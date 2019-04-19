@@ -76,7 +76,7 @@ contexts:
     - match: (?i:\b((?:primary|foreign)\s+key|references|on\sdelete(\s+cascade)?|on\supdate(\s+cascade)?|check|constraint|default)\b)
       scope: storage.modifier.sql
     - match: \b\d+\b
-      scope: constant.numeric.sqll
+      scope: constant.numeric.sql
     - match: (?i:\b(true|false)\b)
       scope: constant.boolean.sql
     # Saevon Adds table names
