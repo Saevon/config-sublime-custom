@@ -916,6 +916,16 @@ contexts:
           SystemExit|StopIteration|NotImplemented|KeyboardInterrupt|GeneratorExit
         )\b
       scope: support.type.exception.python
+    # Saevon: Adds flask Exceptions
+    - match: |-
+        (?x)\b(
+          # 400
+          BadRequest|Unauthorized|Forbidden|NotFound|MethodNotAllowed|NotAcceptable|RequestTimeout|Conflict|Gone|LengthRequired|PreconditionFailed|RequestEntityTooLarge |RequestURITooLarge|UnsupportedMediaType|RequestedRangeNotSatisfiable|ExpectationFailed|ImATeapot|UnprocessableEntity|Locked|PreconditionRequired|TooManyRequests|RequestHeaderFieldsTooLarge|UnavailableForLegalReasons
+          # 500
+          |
+          |InternalServerError|NotImplemented|BadGateway|ServiceUnavailable|HTTPUnicodeError|ClientDisconnected|SecurityError
+        )\b
+      scope: support.type.exception.python
 
   builtin-functions:
     - match: |-
