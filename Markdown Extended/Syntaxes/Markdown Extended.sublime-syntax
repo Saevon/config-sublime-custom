@@ -76,8 +76,8 @@ contexts:
       captures:
         1: keyword.control.markdown
         2: support.type.markdown
-        3: support.type.markdown
-        5: support.type.markdown
+        3: support.flag.markdown
+        5: support.flag.markdown
         6: string.unquoted.markdown
       push:
         - match: '!endalert!'
@@ -85,7 +85,18 @@ contexts:
           pop: true
         # Alerts can be indented 4 spaces (and it counts as normal markdown)
         - match: '^\s{4}'
+        - include: body
+        - include: inline
+    - match: '(!spoiler!)\s*(design|idea|todo|misc)'
+      captures:
+        1: keyword.control.markdown
+        2: support.type.markdown
+      push:
+        - match: '!endspoiler!'
           scope: keyword.control.markdown
+          pop: true
+        # Alerts can be indented 4 spaces (and it counts as normal markdown)
+        - match: '^\s{4}'
         - include: body
         - include: inline
     # Definition Table
@@ -135,26 +146,103 @@ contexts:
             | [ ]{,3}(?<marker>[-*_])([ ]{,2}\k<marker>){2,}[ \t]*+$
             )
           pop: true
+        - include: codeblock
         - include: block_quote
         - include: block_raw
         - include: heading
         - include: separator
-    - match: '(```|~~~|{%\s*highlight)\s*(c)\s*((?:linenos\s*)?%})?$'
+
+    # Saevon: Moves code blocks out, allowing them to be reused
+    - include: codeblock
+
+    - match: '^[ ]{0,3}([*+-])(?=\s)'
       captures:
-        1: punctuation.definition.fenced.markdown
-        2: variable.language.fenced.markdown
-        3: punctuation.definition.fenced.markdown
+        1: punctuation.definition.list_item.markdown
       push:
-        - meta_scope: markup.raw.block.markdown markup.raw.block.fenced.markdown
-        - meta_content_scope: source.c
-        - match: '(```|~~~|{%\s*endhighlight\s*%})\n'
+        - meta_scope: markup.list.unnumbered.markdown
+        - match: ^(?=\S)
           captures:
-            1: punctuation.definition.fenced.markdown
-            2: variable.language.fenced.markdown
-            3: punctuation.definition.fenced.markdown
+            1: punctuation.definition.list_item.markdown
           pop: true
-        # Saevon: C code seems broken, it never ends scope properly
-        # - include: scope:source.c
+        - include: list-paragraph
+    - match: '^[ ]{0,3}([0-9]+)(\.)(?=\s)'
+      captures:
+        1: punctuation.definition.list_item.markdown punctuation.definition.list_item.number.markdown
+        2: punctuation.definition.list_item.markdown
+      push:
+        - meta_scope: markup.list.numbered.markdown
+        - match: ^(?=\S)
+          captures:
+            1: punctuation.definition.list_item.markdown punctuation.definition.list_item.number.markdown
+            2: punctuation.definition.list_item.markdown
+          pop: true
+        - include: list-paragraph
+    - match: '^(?=<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b)(?!.*?</\1>)'
+      comment: Markdown formatting is disabled inside block-level tags.
+      push:
+        - meta_scope: meta.disable-markdown
+        - match: (?<=^</\1>$\n)
+          pop: true
+        - include: scope:text.html.basic
+        - include: scope:text.html.handlebars
+    - match: '^(?=<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b)'
+      comment: Same rule but for one line disables.
+      push:
+        - meta_scope: meta.disable-markdown
+        - match: $\n?
+          pop: true
+        - include: scope:text.html.basic
+        - include: scope:text.html.handlebars
+    - match: |-
+        (?x:
+          \s*           # Leading whitespace
+          (\[)(.+?)(\])(:)    # Reference name
+          [ \t]*          # Optional whitespace
+          (<?)(\S+?)(>?)      # The url
+          [ \t]*          # Optional whitespace
+          (?:
+              ((\().+?(\)))   # Match title in quotes…
+            | ((").+?("))   # or in parens.
+          )?            # Title is optional
+          \s*           # Optional whitespace
+          $
+        )
+      scope: meta.link.reference.def.markdown
+      captures:
+        1: punctuation.definition.constant.markdown
+        2: constant.other.reference.link.markdown
+        3: punctuation.definition.constant.markdown
+        4: punctuation.separator.key-value.markdown
+        5: punctuation.definition.link.markdown
+        6: markup.underline.link.markdown
+        7: punctuation.definition.link.markdown
+        8: string.other.link.description.title.markdown
+        9: punctuation.definition.string.begin.markdown
+        10: punctuation.definition.string.end.markdown
+        11: string.other.link.description.title.markdown
+        12: punctuation.definition.string.begin.markdown
+        13: punctuation.definition.string.end.markdown
+    - match: '^(?=\S)(?![=-]{3,}(?=$))'
+      push:
+        - meta_scope: meta.paragraph.markdown
+        - include: html_comment
+        - match: '^(?:\s*$|(?=[ ]{,3}>.))|(?=[ \t]*\n)(?<=^===|^====|=====|^---|^----|-----)[ \t]*\n|(?=^#)'
+          pop: true
+        - include: inline
+        - include: list-paragraph
+        - include: scope:text.html.handlebars
+        - match: '^(={3,})(?=[ \t]*$)'
+          scope: markup.heading.1.markdown
+          captures:
+            1: punctuation.definition.heading.markdown
+        - match: '^(-{3,})(?=[ \t]*$)'
+          scope: markup.heading.2.markdown
+          captures:
+            1: punctuation.definition.heading.markdown
+
+  #---------------------------------
+  # saevon: moves code blocks out, allowing them to be reused
+  codeblock:
     #---------------------------------
     # Saevon: Adds Assembly
     - match: '(```|~~~|{%\s*highlight)\s*(gas|arm|asm)\s*((?:linenos\s*)?%})?$'
@@ -808,89 +896,25 @@ contexts:
             2: variable.language.fenced.markdown
             3: punctuation.definition.fenced.markdown
           pop: true
-    - match: '^[ ]{0,3}([*+-])(?=\s)'
+    - match: '(```|~~~|{%\s*highlight)\s*(c)\s*((?:linenos\s*)?%})?$'
       captures:
-        1: punctuation.definition.list_item.markdown
+        1: punctuation.definition.fenced.markdown
+        2: variable.language.fenced.markdown
+        3: punctuation.definition.fenced.markdown
       push:
-        - meta_scope: markup.list.unnumbered.markdown
-        - match: ^(?=\S)
+        - meta_scope: markup.raw.block.markdown markup.raw.block.fenced.markdown
+        - meta_content_scope: source.c
+        - match: '(```|~~~|{%\s*endhighlight\s*%})\n'
           captures:
-            1: punctuation.definition.list_item.markdown
+            1: punctuation.definition.fenced.markdown
+            2: variable.language.fenced.markdown
+            3: punctuation.definition.fenced.markdown
           pop: true
-        - include: list-paragraph
-    - match: '^[ ]{0,3}([0-9]+)(\.)(?=\s)'
-      captures:
-        1: punctuation.definition.list_item.markdown punctuation.definition.list_item.number.markdown
-        2: punctuation.definition.list_item.markdown
-      push:
-        - meta_scope: markup.list.numbered.markdown
-        - match: ^(?=\S)
-          captures:
-            1: punctuation.definition.list_item.markdown punctuation.definition.list_item.number.markdown
-            2: punctuation.definition.list_item.markdown
-          pop: true
-        - include: list-paragraph
-    - match: '^(?=<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b)(?!.*?</\1>)'
-      comment: Markdown formatting is disabled inside block-level tags.
-      push:
-        - meta_scope: meta.disable-markdown
-        - match: (?<=^</\1>$\n)
-          pop: true
-        - include: scope:text.html.basic
-        - include: scope:text.html.handlebars
-    - match: '^(?=<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b)'
-      comment: Same rule but for one line disables.
-      push:
-        - meta_scope: meta.disable-markdown
-        - match: $\n?
-          pop: true
-        - include: scope:text.html.basic
-        - include: scope:text.html.handlebars
-    - match: |-
-        (?x:
-          \s*           # Leading whitespace
-          (\[)(.+?)(\])(:)    # Reference name
-          [ \t]*          # Optional whitespace
-          (<?)(\S+?)(>?)      # The url
-          [ \t]*          # Optional whitespace
-          (?:
-              ((\().+?(\)))   # Match title in quotes…
-            | ((").+?("))   # or in parens.
-          )?            # Title is optional
-          \s*           # Optional whitespace
-          $
-        )
-      scope: meta.link.reference.def.markdown
-      captures:
-        1: punctuation.definition.constant.markdown
-        2: constant.other.reference.link.markdown
-        3: punctuation.definition.constant.markdown
-        4: punctuation.separator.key-value.markdown
-        5: punctuation.definition.link.markdown
-        6: markup.underline.link.markdown
-        7: punctuation.definition.link.markdown
-        8: string.other.link.description.title.markdown
-        9: punctuation.definition.string.begin.markdown
-        10: punctuation.definition.string.end.markdown
-        11: string.other.link.description.title.markdown
-        12: punctuation.definition.string.begin.markdown
-        13: punctuation.definition.string.end.markdown
-    - match: '^(?=\S)(?![=-]{3,}(?=$))'
-      push:
-        - meta_scope: meta.paragraph.markdown
-        - include: html_comment
-        - match: '^(?:\s*$|(?=[ ]{,3}>.))|(?=[ \t]*\n)(?<=^===|^====|=====|^---|^----|-----)[ \t]*\n|(?=^#)'
-          pop: true
-        - include: inline
-        - include: scope:text.html.handlebars
-        - match: '^(={3,})(?=[ \t]*$)'
-          scope: markup.heading.1.markdown
-          captures:
-            1: punctuation.definition.heading.markdown
-        - match: '^(-{3,})(?=[ \t]*$)'
-          scope: markup.heading.2.markdown
-          captures:
-            1: punctuation.definition.heading.markdown
+        # Saevon: C code seems broken, it never ends scope properly
+        # - include: scope:source.c
+
+  # Saevon: END: moves code blocks out, to allow them "inline"
+  #--------------------------------------------------------------
 
   html_comment:
     - match: <!--
@@ -1035,8 +1059,11 @@ contexts:
                 HTML grammar will not mark it up as invalid.
       scope: meta.other.valid-bracket.markdown
   escape:
-    - match: '\\[-`*_#+.!(){}\[\]\\>]'
-      scope: constant.character.escape.markdown
+    # Saevon: Attempt to "hide" the backlash part for easier reading
+    - match: '(\\)([-`*_#+.!(){}\[\]\\>])'
+      captures:
+        1: constant.character.escape-sign.markdown
+        2: constant.character.escape.markdown
   heading:
     - match: '\G(#{1})(?!#)\s*(?=\S)'
       captures:
@@ -1171,6 +1198,14 @@ contexts:
     - include: link-ref-literal
     - include: link-ref
     - include: latex-inline
+    # Saevon: Reference Link
+    - match: '({#)([a-zA-Z0-9_:-]+)(})'
+      captures:
+        1: keyword.control.markdown
+        2: string.other.markdown
+        3: keyword.control.markdown
+    - match: '({#)([a-zA-Z0-9_:-]+)(})'
+
   italic:
     - match: |-
         (?x)
@@ -1313,7 +1348,7 @@ contexts:
         5: punctuation.definition.constant.begin.markdown
         6: punctuation.definition.constant.end.markdown
   list-paragraph:
-    - match: \G\s+(?=\S)
+    - match: \G(?=\s+\S)
       push:
         - meta_scope: meta.paragraph.list.markdown
         - match: ^\s*$
