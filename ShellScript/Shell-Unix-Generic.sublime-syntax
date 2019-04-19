@@ -601,14 +601,15 @@ contexts:
       scope: constant.other.shell
 
   redirection:
+    # Saevon: Fixes the scoping for process-redirection
     - match: '[><]\('
       captures:
-        0: punctuation.definition.string.begin.shell
+        0: keyword.operator.redirect.shell punctuation.definition.block.begin.shell
       push:
-        - meta_scope: string.interpolated.process-substitution.shell
+        - meta_scope: meta.block.process-substitution.shell
         - match: \)
           captures:
-            0: punctuation.definition.string.end.shell
+            0: keyword.operator.redirect.shell punctuation.definition.block.end.shell
           pop: true
         - include: main
     - match: '&>|\d*>&\d*|\d*(>>|>|<)|\d*<&|\d*<>'
