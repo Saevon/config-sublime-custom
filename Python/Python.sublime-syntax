@@ -53,12 +53,14 @@ variables:
     __future__
     |abc|ast|atexit|copy
     |asynchat|asyncio|asyncore|multiprocessing|select|subprocess
-    |argparse|optparse|cProfile|inspect|logging|os|sys|setuptools|tempfile|traceback|warnings
+    |argparse|optparse|cProfile|inspect|logging|os(\.path)?|platform|shutil|sys|setuptools|socket|tempfile|traceback|warnings
     |c?math|c?string|datetime|decimal|enum|fractions|hashlib|json|pickle|random|re|time|uuid
     |typing|unittest(\.mock)?|mock
 
     |collections|contextlib|itertools|functools|queue
   )\b'
+  # Saevon: Adds special variables (commonly used variables)
+  specials: 'self|cls|other|args|kwargs|method|func|_'
 contexts:
   main:
     - include: statements
@@ -700,7 +702,7 @@ contexts:
     - include: function-parameters-tuple
     - include: illegal-names
     # Saevon: Makes "self" and "cls" special
-    - match: '\b(self|cls|other)\b'
+    - match: '\b({{specials}})\b'
       scope: variable.parameter.python variable.language.python
     - match: '{{identifier}}'
       scope: variable.parameter.python
@@ -734,7 +736,7 @@ contexts:
               pop: true
         - include: illegal-names
         # Saevon: Makes "self" and "cls" special
-        - match: '\b(self|cls|other)\b'
+        - match: '\b({{specials}})\b'
           scope: variable.parameter.python variable.language.python
         - match: '{{identifier}}'
           scope: variable.parameter.python
@@ -858,7 +860,7 @@ contexts:
             - include: expressions
         - include: illegal-names
         # Saevon: Makes "self" and "cls" special
-        - match: '\b(self|cls|other)\b'
+        - match: '\b({{specials}})\b'
           scope: variable.parameter.python variable.language.python
         - match: '{{identifier}}'
           scope: variable.parameter.python
@@ -882,10 +884,7 @@ contexts:
     - include: function-parameters-tuple
     - include: illegal-names
     # Saevon: Makes "self" and "cls" special
-    - match: '\b(self|cls|other)\b'
-      scope: variable.parameter.python variable.language.python
-      # Saevon: Makes _ special in lambdas
-    - match: _(?!{{identifier_continue}})
+    - match: '\b({{specials}})\b'
       scope: variable.parameter.python variable.language.python
     - match: '{{identifier}}'
       scope: variable.parameter.python
@@ -1129,7 +1128,7 @@ contexts:
 
   language-variables:
     # Saevon: Makes "self" and "cls" special
-    - match: \b(self|cls|other)\b
+    - match: \b({{specials}})\b
       scope: variable.language.python
     - match: _(?!{{identifier_continue}})
       scope: variable.language.python
@@ -1215,7 +1214,7 @@ contexts:
           # module-specific / global
           all|file|package|
           # functions & methods
-          annotations|closure|code|defaults|func|globals|kwdefaults|self|qualname|
+          annotations|closure|code|defaults|func|globals|kwdefaults|qualname|
           # classes (attributes)
           bases|prepare|slots|metaclass|mro|
           # Python 2
