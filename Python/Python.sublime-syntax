@@ -56,12 +56,16 @@ variables:
   builtin_import_modules: '(?x)\b(
     __future__
     |abc|ast|atexit|copy
-    |asynchat|asyncio|asyncore|multiprocessing|select|subprocess
-    |argparse|optparse|cProfile|inspect|logging|os(\.path)?|platform|shutil|sys|setuptools|socket|tempfile|traceback|warnings
-    |c?math|c?string|datetime|decimal|enum|fractions|hashlib|json|pickle|random|re|time|uuid
+    |asynchat|asyncio|asyncore|ctypes|multiprocessing|select|subprocess|io|threading
+    |argparse|optparse|cProfile|inspect|logging|os(\.path)?|platform|shutil|sys|setuptools|signal|socket|tempfile|traceback|warnings
+    |binascii|c?math|c?string|datetime|decimal|enum|fractions|hashlib|random|re|time|uuid
+    |stat|tarfile|pickle|json
     |typing|unittest(\.mock)?|mock
 
-    |collections|contextlib|itertools|functools|queue
+    |collections(\.abc)?|contextlib|itertools|functools|queue
+  )\b'
+  common_import_modules: '(?x)\b(
+    requests|Crypto
   )\b'
   # Saevon: Adds special variables (commonly used variables)
   specials: 'self|cls|other|args|kwargs|method|func|_'
@@ -180,6 +184,8 @@ contexts:
   # Saevon: Adds Builtin modules
   builtin-import-modules:
     - match: '{{builtin_import_modules}}'
+      scope: support.module.python
+    - match: '{{common_import_modules}}'
       scope: support.module.python
 
   import-from-name:
@@ -591,6 +597,11 @@ contexts:
                 # Saevon: Splits the inherited classes, highlighting only the actual CLASS
                 - match: '({{builtin_import_modules}})(?: *(\.) *)'
                   # Saevon: Path (that is a builtin module)
+                  captures:
+                    1: support.module.python
+                    2: punctuation.accessor.dot.python
+                - match: '({{common_import_modules}})(?: *(\.) *)'
+                  # Saevon: Path (that is a commonly used module)
                   captures:
                     1: support.module.python
                     2: punctuation.accessor.dot.python
