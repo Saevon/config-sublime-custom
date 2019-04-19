@@ -585,6 +585,9 @@ contexts:
       scope: support.function.osx.shell
     - match: "[|!]"
       scope: keyword.operator.pipe.shell
+    # Saevon: Adds more Rare binaries
+    - match: '{{start}}(curl){{end}}'
+      scope: support.function.common.shell
     # Saevon: Adds noop constants
     - match: '{{start}}(noop){{end}}'
       scope: constant.other.shell
