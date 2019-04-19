@@ -363,7 +363,13 @@ contexts:
           captures:
             0: punctuation.definition.string.end.shell
           pop: true
-        - match: '\\[`\\$]'
+        # Saevon: Makes the escape sign invisible for characters that act as themselves
+        - match: '(\\)([`\\])'
+          captures:
+            1: constant.character.escape-sign.python
+            2: constant.character.escape.shell
+        # Saevon: The actual newline needs to still show the character though
+        - match: '\\(\n)?$'
           scope: constant.character.escape.shell
         - include: main
     - match: \$\(
@@ -610,7 +616,7 @@ contexts:
       scope: keyword.operator.redirect.shell
   string:
     # Saevon: Allows you to escape an actual newline
-    - match: \\$
+    - match: \\(\n)?$
       scope: constant.character.escape.shell
     - match: \\.
       scope: constant.character.escape.shell
@@ -632,7 +638,13 @@ contexts:
           captures:
             0: punctuation.definition.string.end.shell
           pop: true
-        - match: '\\[\$`"\\\n]'
+        # Saevon: Makes the escape sign invisible for characters that act as themselves
+        - match: '(\\)([\$`"\\])'
+          captures:
+            1: constant.character.escape-sign.python
+            2: constant.character.escape.shell
+        # Saevon: The actual newline needs to still show the character though
+        - match: '\\(\n)?$'
           scope: constant.character.escape.shell
         - include: variable
         - include: interpolation

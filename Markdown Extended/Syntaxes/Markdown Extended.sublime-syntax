@@ -1348,7 +1348,7 @@ contexts:
         5: punctuation.definition.constant.begin.markdown
         6: punctuation.definition.constant.end.markdown
   list-paragraph:
-    - match: \G(?=\s+\S)
+    - match: \G\s+(?=\S)
       push:
         - meta_scope: meta.paragraph.list.markdown
         - match: ^\s*$
@@ -1470,4 +1470,3 @@ contexts:
         - match: \$\$
           scope: string.other.math.latex punctuation.definition.string.end.latex
           pop: true
-
