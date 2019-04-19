@@ -27,6 +27,9 @@ class Ghc(Linter):
         r'\s+(?P<warning>Warning:\s+)?(?P<message>([\n]|.)+?)(?=\n\s*\|)'
     )
     multiline = True
+    defaults = {
+        'selector': 'source.haskell, text.tex.latex.haskell'
+    }
 
     # No stdin
     tempfile_suffix = {
