@@ -92,9 +92,9 @@ contexts:
         - meta_scope: meta.directive.condition.makefile
         - include: string
         - include: variable
-        - include: shell
         - match: \)
           pop: true
+        # Saevon: TODO this deserves shell variables
   comment:
     - match: ^\s*(\#)
       captures:
@@ -126,20 +126,16 @@ contexts:
           pop: true
         - include: scope:source.shell
   shell:
-    # - match: '(?x) (?<=[\s\(])\b(?:for|in|do|done|while|if|then|fi|elif|read|echo|case|esac|exit|die|printf)\b'
-    #   scope: support.function.builtin.makefile
-    # - match: '(?x) (?: \;\; | \; | \[\[ | \]\] | \&\& | \|\| | \! | = | > | < | & | \| )'
-    #   scope: keyword.operator.makefile
-    # - match: '(?x) \b(?:cp|mv|rm|cat|ls|\[|\]|find|grep|awk|perl|mkdir|rmdir|cd|cwd|pwd|svn|git|hg|scp|make|ps|sed|python|ruby|setenv|export|echo|test|source|ln|touch)\b'
-    #   scope: support.function.makefile
     - include: line_continuation
-    # - match: \b(true|false)\b
-    #   scope: constant.other.makefile
-    # - include: variable
-    - include: scope:source.shell
-      with_prototypes:
-        - match: '$'
-          pop: true
+    # Saevon: adds proper shell support
+    - match: ''
+      embed: scope:source.shell
+      escape: '\n|$'
+    # - include: scope:source.shell
+      # embed_scope
+      # with_prototypes:
+        # - match: '$'
+        #   pop: true
 
 
   string:
