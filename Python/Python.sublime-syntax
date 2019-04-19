@@ -60,7 +60,7 @@ variables:
     |argparse|optparse|cProfile|inspect|logging|os(\.path)?|platform|shutil|sys|setuptools|signal|socket|tempfile|traceback|warnings
     |binascii|c?math|c?string|datetime|decimal|enum|fractions|hashlib|random|re|time|uuid
     |stat|tarfile|pickle|json
-    |typing|unittest(\.mock)?|mock
+    |typing|unittest(\.mock)?|mock|pdb
 
     |collections(\.abc)?|contextlib|itertools|functools|queue
   )\b'
@@ -1112,7 +1112,7 @@ contexts:
   builtin-functions:
     - match: |-
         (?x)\b(
-          __import__|all|abs|any|apply|ascii|bin|callable|chr|classmethod|cmp|coerce|
+          __import__|all|abs|any|apply|ascii|bin|breakpoint|callable|chr|classmethod|cmp|coerce|
           compile|delattr|dir|divmod|enumerate|eval|exec|execfile|filter|format|getattr|
           globals|hasattr|hash|help|hex|id|input|intern|isinstance|issubclass|iter|
           len|locals|map|max|min|next|oct|open|ord|pow|print|property|range|
