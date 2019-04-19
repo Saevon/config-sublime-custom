@@ -68,7 +68,8 @@ variables:
     requests|Crypto
   )\b'
   # Saevon: Adds special variables (commonly used variables)
-  specials: 'self|cls|other|args|kwargs|method|func|_'
+  specials: 'self|cls|other|args|kwargs|_|func|method'
+  specials_callable: 'func|wrapper|decorator|method'
   # Saevon: MUST be used with (?xi)
   encodings: |-
     (?xi:\b(?:
@@ -1158,8 +1159,6 @@ contexts:
       push:
         - include: name-specials
         # Saevon: Improves constants
-        - match: '{{identifier_constant}}'
-          scope: variable.other.constant.python
         - include: generic-names
         - match: ''
           pop: true
@@ -1171,8 +1170,6 @@ contexts:
       push:
         - include: dotted-name-specials
         # Saevon: Improves constants
-        - match: '{{identifier_constant}}'
-          scope: variable.other.constant.python
         - include: generic-names
         - match: ''
           pop: true
@@ -1266,6 +1263,8 @@ contexts:
 
   language-variables:
     # Saevon: Makes "self" and "cls" special
+    - match: \b({{specials_callable}})\b
+      scope: variable.function.python
     - match: \b({{specials}})\b
       scope: variable.language.python
     - match: _(?!{{identifier_continue}})
