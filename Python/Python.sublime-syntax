@@ -599,6 +599,53 @@ contexts:
                 - match: ''
                   pop: true
             - include: expressions
+    # Saevon: Adds named tuple highlighting
+    - match: '({{identifier}})?\s+(=)\s+(namedtuple)'
+      captures:
+        1: entity.name.class.python
+        2: keyword.operator.assignment.python
+        3: storage.type.class.python
+      push: namedtuple
+    - match: '(namedtuple)'
+      scope: storage.type.class.python
+      push: namedtuple
+
+  # Saevon: Adds named tuple highlighting
+  namedtuple:
+      - meta_scope: meta.class.python
+      - match: \(
+        scope: punctuation.section.arguments.begin.python
+        set:
+          - meta_content_scope: meta.class.python meta.function-call.arguments.python
+          - match: '([uU]?)([''])({{identifier}})([''])'
+            scope: meta.string.python string.quoted.single.python
+            captures:
+              1: storage.type.string.python
+              2: punctuation.definition.string.begin.python
+              3: entity.name.class.python
+              4: punctuation.definition.string.end.python
+            set: namedtuple-arguments
+          - match: '([uU]?)(["])({{identifier}})(["])'
+            scope: meta.string.python string.quoted.double.python
+            captures:
+              1: storage.type.string.python
+              2: punctuation.definition.string.begin.python
+              3: entity.name.class.python
+              4: punctuation.definition.string.end.python
+            set: namedtuple-arguments
+          # If we don't find anything class-like... swap to basic function syntax
+          - match: ''
+            set: namedtuple-arguments
+      # This might not be a function call, abort if so
+      - match: ''
+        pop: true
+  namedtuple-arguments:
+    - meta_content_scope: meta.class.python meta.function-call.arguments.python
+    - match: \)
+      scope: punctuation.section.arguments.end.python
+      set: after-expression
+    - include: arguments
+
 
   functions:
     - match: '^\s*(?:(async)\s+)?(def)\b'
