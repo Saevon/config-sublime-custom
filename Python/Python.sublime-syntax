@@ -55,7 +55,7 @@ variables:
     |asynchat|asyncio|asyncore|multiprocessing|select|subprocess
     |argparse|optparse|cProfile|inspect|logging|os|sys|setuptools|tempfile|traceback|warnings
     |c?math|c?string|datetime|decimal|enum|fractions|hashlib|json|pickle|random|re|time|uuid
-    |typing|unittest
+    |typing|unittest(\.mock)?|mock
 
     |collections|contextlib|itertools|functools|queue
   )\b'
