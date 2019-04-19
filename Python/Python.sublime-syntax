@@ -956,6 +956,9 @@ contexts:
           list|long|memoryview|object|range|set|slice|str|tuple|unicode|xrange
         )\b
       scope: support.type.python
+    - match: |-
+        (?x)\b(type)\b
+      scope: support.type.python
 
 
   name:
