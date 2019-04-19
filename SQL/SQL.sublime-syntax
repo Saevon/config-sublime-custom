@@ -76,11 +76,46 @@ contexts:
     - match: (?i:\b((?:primary|foreign)\s+key|references|on\sdelete(\s+cascade)?|on\supdate(\s+cascade)?|check|constraint|default)\b)
       scope: storage.modifier.sql
     - match: \b\d+\b
-      scope: constant.numeric.sql
+      scope: constant.numeric.sqll
     - match: (?i:\b(true|false)\b)
       scope: constant.boolean.sql
-    - match: (?i:\b(select(\s+(distinct|top))?|insert(\s+(ignore\s+)?into)?|update|delete|from|set|where|group\sby|or|like|between|and|with|case|when|then|else|end|union(\s+all)?|having|order\sby|limit|(inner|cross)\s+join|join|straight_join|(left|right)(\s+outer)?\s+join|natural(\s+(left|right)(\s+outer)?)?\s+join)\b)
+    # Saevon Adds table names
+    - match: (?i:\b(from)\s+(\w+))
+      captures:
+        1: keyword.other.DWL.sql
+        2: variable.table-name.sql
+    - match: '(?xi:\b(
+        (?:(inner|cross)\s+(join))
+        |(?:(?:(full)\s+(outer))\s+(join))
+        |(straight_join)
+        |(?:(?:(natural)\s+)?(?:(left|right)\s+)?(?:(outer)\s+)?(join))
+      )(?:\s+(\w+)))?'
+      captures:
+        2: support.flag.DML.sql
+        3: keyword.other.DWL.sql
+        4: support.flag.DML.sql
+        5: support.flag.DML.sql
+        6: keyword.other.DWL.sql
+        7: keyword.other.DWL.sql
+        8: support.flag.DML.sql
+        9: support.flag.DML.sql
+        10: support.flag.DML.sql
+        11: keyword.other.DWL.sql
+        12: variable.table-name.sql
+    # Saevon: Adds Flags
+    - match: (?i:\b(select(\s+distinct)?(\s+top)?|insert(\s+(ignore\s+)?into)?|update|delete|from|set|where|group\sby|like|between|with|case|when|then|else|end|union(\s+all)?|having|order\sby|limit|(inner|cross)\s+join|join|straight_join|(left|right)(\s+outer)?\s+join|natural(\s+(left|right)(\s+outer)?)?\s+join)\b)
       scope: keyword.other.DML.sql
+      captures:
+        2: support.flag.DML.sql
+        3: support.flag.DML.sql
+        5: support.flag.DML.sql
+        7: support.flag.DML.sql
+        8: support.flag.DML.sql
+        9: support.flag.DML.sql
+        10: support.flag.DML.sql
+    # Saevon: Adds Booleans
+    - match: (?i:\bAND|OR|NOT\b)
+      scope: keyword.boolean.sql
     - match: (?i:\b(on|((is\s+)?not\s+)?null)\b)
       scope: keyword.other.DDL.create.II.sql
     - match: (?i:\bvalues\b)
@@ -108,15 +143,19 @@ contexts:
     - match: (?i)\b(CURRENT_(DATE|TIME(STAMP)?|USER)|(SESSION|SYSTEM)_USER)\b
       comment: List of SQL99 built-in functions from http://www.oreilly.com/catalog/sqlnut/chapter/ch04.html
       scope: support.function.scalar.sql
+    # Saevon: Adds more Functions
+    - match: (?i)\b(GROUP_CONCAT|CONCAT|DISTINCT)(?=\s*\()
+      scope: support.function.aggregate.sql
     - match: (?i)\b(AVG|COUNT|MIN|MAX|SUM)(?=\s*\()
       comment: List of SQL99 built-in functions from http://www.oreilly.com/catalog/sqlnut/chapter/ch04.html
       scope: support.function.aggregate.sql
-    - match: (?i)\b(CONCATENATE|CONVERT|LOWER|SUBSTRING|TRANSLATE|TRIM|UPPER)\bss
+    - match: (?i)\b(CONCATENATE|CONVERT|LOWER|SUBSTRING|TRANSLATE|TRIM|UPPER)\b
       scope: support.function.string.sql
+    # Removes the wierd dot syntax
     - match: \b(\w+?)\.(\w+)\b
       captures:
-        1: constant.other.database-name.sql
-        2: constant.other.table-name.sql
+        1: variable.table-name.sql
+        2: variable.column-name.sql
     - include: strings
     - include: regexps
     - match: (\()(\))
