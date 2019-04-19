@@ -28,9 +28,13 @@ scope: source.python
 variables:
   # We support unicode here because Python 3 is the future
   identifier_continue: '[[:alnum:]_]'
-  identifier: '\b[[:alpha:]_]{{identifier_continue}}*\b'
+  identifier_chars: '[[:alpha:]_]'
+  identifier: '\b{{identifier_chars}}{{identifier_continue}}*\b'
   # Saevon: Improves constants
   identifier_constant: '\b[[:upper:]_][[:upper:][:digit:]_]*\b'
+  # Saevon: Improves Exceptions
+  identifier_error: '\b{{identifier_chars}}{{identifier_continue}}*(?:Exception|Error)\b'
+
   digitpart: (?:\d(?:_?\d)*)
   path: '({{identifier}} *\. *)*{{identifier}}'
   sql_indicator: \s*(?:SELECT|INSERT|UPDATE|DELETE|CREATE|REPLACE|ALTER|WITH)\b
@@ -594,6 +598,10 @@ contexts:
                   # Saevon: Path
                   captures:
                     1: punctuation.accessor.dot.python
+                # Saevon: Final inherited class (for Errors)
+                - match: '({{identifier_error}})(?! *(\.) *)'
+                  captures:
+                    1: entity.other.inherited-class.python entity.name.exception.python
                 - match: '({{identifier}})(?! *(\.) *)'
                   # Saevon: Final inherited class
                   captures:
@@ -827,6 +835,8 @@ contexts:
 
   function-call-wrapper:
     - meta_scope: meta.function-call.python
+    - match: '{{identifier_error}}'
+      scope: meta.qualified-name.python entity.name.exception.python
     - match: '{{identifier}}'
       scope: meta.qualified-name.python variable.function.python
     - match: \)
@@ -1114,6 +1124,8 @@ contexts:
     # Saevon: Improves constants
     - match: '{{identifier_constant}}'
       scope: variable.other.constant.python
+    - match: '{{identifier_error}}'
+      scope: entity.name.exception.python
     - match: '{{identifier}}'
       scope: meta.generic-name.python
 
