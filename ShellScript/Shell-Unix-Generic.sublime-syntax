@@ -603,18 +603,18 @@ contexts:
     # Installers
 
     # Saevon: Adds args for cabal
-    - match: '{{start}}(cabal)(?:\s*(bench|build|check|clean|configure|copy|exec|fetch|freeze|gen-bounds|get|haddock|hscolour|info|init|install|list|register|repl|report|run|sandbox|sdist|test|update|upload|user-config))?{{end}}'
+    - match: '{{start}}(cabal)(?:\s+(bench|build|check|clean|configure|copy|exec|fetch|freeze|gen-bounds|get|haddock|hscolour|info|init|install|list|register|repl|report|run|sandbox|sdist|test|update|upload|user-config))?{{end}}'
       captures:
         1: support.function.installer.shell
         2: support.parameter.shell
     # Saevon: Adds args for gem
-    - match: '{{start}}(gem)(?:\s*(build|cert|check|cleanup|contents|dependency|environment|fetch|generate_index|help|install|list|lock|mirror|open|outdated|owner|pristine|push|query|rdoc|search|server|sources|specification|stale|uninstall|unpack|update|which|yank))?{{end}}'
+    - match: '{{start}}(gem)(?:\s+(build|cert|check|cleanup|contents|dependency|environment|fetch|generate_index|help|install|list|lock|mirror|open|outdated|owner|pristine|push|query|rdoc|search|server|sources|specification|stale|uninstall|unpack|update|which|yank))?{{end}}'
       captures:
         1: support.function.installer.shell
         2: support.parameter.shell
     # Saevon: Adds args for npm
     - match: '(?x){{start}}
-        (npm)(?:\s*(
+        (npm)(?:\s+(
           access|adduser|bin|bugs|cache|completion
           |deprecate|dist-tag|docs|doctor|edit|explore|get|help|help-search|init
           |login|logout|outdated|owner|pack|ping|prefix|profile|prune|publish
@@ -638,32 +638,32 @@ contexts:
         2: support.parameter.shell
 
     # Saevon: Adds args for brew
-    - match: '{{start}}(brew)(?:\s*(cask)?\s*((?:un)?install|search|info|home|options|update|upgrade|link|list|config|doctor|create|edit|help|cleanup))?{{end}}'
+    - match: '{{start}}(brew)(?:(?:\s+(cask))?\s+((?:un)?install|search|info|home|options|update|upgrade|link|list|config|doctor|create|edit|help|cleanup))?{{end}}'
       captures:
         1: support.function.installer.shell
         2: support.flag.shell
         3: support.parameter.shell
     # Saevon: Adds args for apt
-    - match: '{{start}}(apt-get)(?:\s*(install|update|(dist-)?upgrade|purge|(auto)?remove|build-dep|check|(auto)?clean))?{{end}}'
+    - match: '{{start}}(apt-get)(?:\s+(install|changelog|update|(dist-)?upgrade|purge|(auto)?remove|build-dep|check|(auto)?clean))?{{end}}'
       captures:
         1: support.function.installer.shell
         2: support.parameter.shell
-    - match: '{{start}}(apt-cache)(?:\s*(search|pkgnames|show|policy))?{{end}}'
+    - match: '{{start}}(apt-cache)(?:\s+(search|pkgnames|show|policy))?{{end}}'
       captures:
         1: support.function.installer.shell
         2: support.parameter.shell
     # Saevon: Adds args for service
-    - match: '{{start}}(service)(?:\s*([^\s]+)(?:\s*(start|stop|restart|status|reload))?)?{{end}}'
+    - match: '{{start}}(service)(?:\s+([^\s]+)(?:\s+(start|stop|restart|status|reload))?)?{{end}}'
       captures:
         1: support.function.installer.shell
         2: entity.name.function.shell
         3: support.parameter.shell
-    - match: '{{start}}(systemctl)(?:\s*(start|stop|restart|status|reload|enable|disable|is-enabled))?{{end}}'
+    - match: '{{start}}(systemctl)(?:\s+(start|stop|restart|status|reload|enable|disable|is-enabled))?{{end}}'
       captures:
         1: support.function.installer.shell
         2: support.parameter.shell
     # Saevon: Adds args for pip
-    - match: '{{start}}((?:sys)?pip[3]?)(?:\s*((?:un)?install|download|freeze|list|show|check|search|wheel|hash|completion|help))?{{end}}'
+    - match: '{{start}}((?:sys)?pip[3]?)(?:\s+((?:un)?install|download|freeze|list|show|check|search|wheel|hash|completion|help))?{{end}}'
       captures:
         1: support.function.installer.shell
         2: support.parameter.shell
