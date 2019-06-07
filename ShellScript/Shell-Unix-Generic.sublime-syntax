@@ -494,6 +494,8 @@ contexts:
       scope: constant.numeric.ip.shell
     - match: '\b(\d+)\b'
       scope: constant.numeric.integer.shell
+    - match: '\b(0[xbod]\d+)\b'
+      scope: constant.numeric.integer.shell
     - match: '(?x)\b(
         (?:eth|wl(an)|ww)
         (
