@@ -1203,6 +1203,32 @@ contexts:
     - include: codeblock
     # Saevon: Adds custom Japanese highlights
     - include: japanese
+    # Saevon: Adds strings
+    - include: quoted_string
+
+
+  quoted_string:
+    - match: '"'
+      scope: punctuation.definition.string.begin.markdown
+      push:
+        - meta_scope: string.quoted.double.markdown
+        - match: '"'
+          scope: punctuation.definition.string.end.markdown
+          pop: true
+        - match: '\n'
+          pop: true
+        - include: inline
+    - match: '"'
+      scope: punctuation.definition.string.begin.markdown
+      push:
+        - meta_scope: string.quoted.single.markdown
+        - match: '"'
+          scope: punctuation.definition.string.end.markdown
+          pop: true
+        - match: '\n'
+          pop: true
+        - include: inline
+
 
 
     # Saevon: Adds custom Japanese highlights
