@@ -1193,6 +1193,47 @@ contexts:
     - include: link-ref-literal
     - include: link-ref
     - include: latex-inline
+    # Saevon: Reference Link
+    - match: '({#)([a-zA-Z0-9_:-]+)(})'
+      captures:
+        1: keyword.control.markdown
+        2: string.other.markdown
+        3: keyword.control.markdown
+    # Saevon: Allows codeblocks inline
+    - include: codeblock
+    # Saevon: Adds custom Japanese highlights
+    - include: japanese
+
+
+    # Saevon: Adds custom Japanese highlights
+  japanese:
+    - match: '前に'
+      scope: support.flag.japanese
+    - match: 'など'
+      scope: support.function.japanese
+    - match: 'なきゃだめ|ください'
+      scope: support.flag.japanese
+    # Match all the non-keywords (so as not to highlight them)
+    - match: 'んで'
+    - match: 'で|を|へ|が|は|に|の'
+      scope: keyword.operator.japanese
+    - match: '〈'
+      scope: punctuation.definition.string.begin.japanese
+      push:
+        - meta_scope: string.other.japanese
+        - match: '〉'
+          scope: punctuation.definition.string.end.japanese
+          pop: true
+        - include: inline
+    - match: '「'
+      scope: punctuation.definition.string.begin.japanese
+      push:
+        - meta_scope: string.other.japanese
+        - match: '」'
+          scope: punctuation.definition.string.end.japanese
+          pop: true
+        - include: inline
+
   italic:
     - match: |-
         (?x)
