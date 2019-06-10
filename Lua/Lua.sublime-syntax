@@ -15,6 +15,7 @@ variables:
   identifier_break: (?!{{identifier_char}})
   identifier_raw: (?:{{identifier_start}}{{identifier_char}}*)
   identifier: (?:(?!{{reserved_word}}){{identifier_raw}})
+  identifier_language: (?:self|global)
 
   function_args_begin: (?:\(|"|'|\[=*\[|\{)
   function_call_ahead: (?=\s*{{function_args_begin}})
@@ -317,6 +318,10 @@ contexts:
     - match: '{{identifier}}{{function_call_ahead}}'
       scope: meta.property.lua variable.function.lua
       pop: true
+    # Saevon: Adds custom variables
+    - match: '{{identifier_language}}{{identifier_break}}'
+      scope: variable.language.lua
+      pop: true
     - match: '{{identifier}}'
       scope: meta.property.lua
       pop: true
@@ -363,8 +368,9 @@ contexts:
     - match: \.\.\.
       scope: constant.language.lua
       pop: true
-    - match: self{{identifier_break}}
-      scope: variable.language.this.lua
+    # Saevon: Updates language variables
+    - match: '{{identifier_language}}{{identifier_break}}'
+      scope: variable.language.lua
       pop: true
 
   support:
