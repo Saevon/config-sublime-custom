@@ -497,7 +497,7 @@ contexts:
     - match: '\b(0[xbod]\d+)\b'
       scope: constant.numeric.integer.shell
     - match: '(?x)\b(
-        (?:eth|wl(an)|ww)
+        (?:eth|lo|wl(an)|ww)
         (
           o[0-9]+
           |(p[0-9]+s[0-9]+(f[0-9]+)?(d[0-9]+)?)
