@@ -91,9 +91,12 @@ contexts:
       scope: storage.modifier.sql
     - match: \b\d+\b
       scope: constant.numeric.sql
+    # Saevon: Adds constants
+    - match: (?i:\b(null)\b)
+      scope: constant.language.sql
     - match: (?i:\b(true|false)\b)
       scope: constant.boolean.sql
-    # Saevon Adds table names
+    # Saevon: Adds table names
     - match: (?i:\b(from)\s+(\w+))
       captures:
         1: keyword.other.DWL.sql
@@ -136,8 +139,6 @@ contexts:
       scope: support.function.array.sql
     - match: \b(?i:ARRAY)\b
       scope: support.other.sql storage.type.sql
-    - match: (?i:\b(on|((is\s+)?not\s+)?null)\b)
-      scope: keyword.other.DDL.create.II.sql
     - match: \b(?i:values)\b
       scope: keyword.other.DML.II.sql
     - match: (?i:\b(begin(\s+work)?|start\s+transaction|commit(\s+work)?|rollback(\s+work)?)\b)
@@ -155,7 +156,7 @@ contexts:
     # Saevon: Makes the star be a constant
     - match: \*
       scope: constant.other.star.sql
-    - match: "[!<>]?=|<>|<|>"
+    - match: "[!<>]?=|<>|<|>|is"
       scope: keyword.operator.comparison.sql
     - match: '-|\+|/'
       scope: keyword.operator.math.sql
