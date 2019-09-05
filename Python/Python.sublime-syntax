@@ -57,7 +57,7 @@ variables:
     __future__
     |abc|ast|atexit|copy
     |asynchat|asyncio|asyncore|ctypes|multiprocessing|select|subprocess|io|threading
-    |argparse|optparse|cProfile|inspect|logging|os(\.path)?|platform|shlex|shutil|sys|setuptools|signal|socket|tempfile|traceback|urllib|warnings
+    |argparse|optparse|cProfile|inspect|logging|os(\.path)?|platform|shlex|shutil|sys|setuptools|signal|socket|tempfile|textwrap|traceback|urllib|warnings
     |binascii|c?math|c?string|datetime|decimal|enum|fractions|hashlib|random|re|time|uuid
     |stat|tarfile|pickle|json
     |typing|unittest(\.mock)?|mock|pdb
