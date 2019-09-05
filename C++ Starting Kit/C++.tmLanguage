@@ -150,39 +150,79 @@
 <!----------------------------------------
     Member Initializer - CCpp
 ---------------------------------------->
+        <!-- Saevon: Sane member initialization -->
         <dict>
             <key>begin</key>
-            <string>(\:)\s*(\w+\(\w+\))+</string>
+            <string>(\:)(?!\:)</string>
+            <key>end</key>
+            <string>(\))(?=\s*[^\s,])|(?=;|\{)</string>
+
             <key>beginCaptures</key>
             <dict>
                 <key>1</key>
                 <dict>
                     <key>name</key>
-                    <string>begin</string>
-                </dict>
-                <key>2</key>
-                <dict>
-                    <key>name</key>
-                    <string>variable</string>
+                    <string>punctuation.initializer-list.c++</string>
                 </dict>
             </dict>
-            <key>end</key>
-            <string>\{</string>
             <key>endCaptures</key>
             <dict>
-                <key>0</key>
+                <key>1</key>
                 <dict>
                     <key>name</key>
-                    <string>open.curly.bracket.block</string>
+                    <string>punctuation.initializer.end.c++</string>
                 </dict>
             </dict>
+
             <key>name</key>
-            <string>member.initializer</string>
+            <string>meta.initializer-list.c++</string>
+
             <key>patterns</key>
             <array>
                 <dict>
-                    <key>include</key>
-                    <string>#comments</string>
+                    <key>begin</key>
+                    <string>\b(\w+)\b\s*(\()</string>
+                    <key>beginCaptures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.member.initializer.c++</string>
+                        </dict>
+                        <key>2</key>
+                        <dict>
+                            <key>name</key>
+                            <string>punctuation.initializer.begin.c++</string>
+                        </dict>
+                    </dict>
+
+                    <!-- if we are missing a comma we end the entire initializer list -->
+                    <!-- so jump all the way out and let the outer match handle scopes -->
+                    <key>end</key>
+                    <string>(?x)
+                        (?=\)\s*[^\s,])
+                        |(\))
+                    </string>
+                    <key>endCaptures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>punctuation.initializer.end.c++</string>
+                        </dict>
+                    </dict>
+
+                    <key>name</key>
+                    <string>meta.initializer.c++</string>
+
+                    <key>patterns</key>
+                    <array>
+                        <dict>
+                            <!-- This only matches closing initializers which don't finish the list
+                                The endCaptures above ends the initializer
+                            -->
+                        </dict>
+                    </array>
                 </dict>
             </array>
         </dict>
@@ -229,6 +269,15 @@
             <string>keyword.operator.cast.c++</string>
         </dict>
 <!--------------------------------------
+    Saevon:
+---------------------------------------->
+        <dict>
+            <key>match</key>
+            <string>\b(typedef|assert)\b\s*</string>
+            <key>name</key>
+            <string>keyword.operator.type.c++</string>
+        </dict>
+<!--------------------------------------
     Saevon: Constants
 ---------------------------------------->
         <dict>
@@ -242,7 +291,7 @@
 ---------------------------------------->
         <dict>
             <key>match</key>
-            <string>\b(asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|_Imaginary|string|int|long|short|signed|struct|typedef|union|unsigned|void)\b</string>
+            <string>\b(asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|_Imaginary|string|int|long|short|signed|struct|union|unsigned|void)\b</string>
             <key>name</key>
             <string>storage.type.c</string>
         </dict>
@@ -269,6 +318,20 @@
             <string>\b([a-zA-Z0-9_]+_t)\b</string>
             <key>name</key>
             <string>storage.type.user.c++</string>
+        </dict>
+<!--------------------------------------
+    Saevon: Standard types c++
+---------------------------------------->
+        <dict>
+            <key>match</key>
+            <string>(?x)\b(
+                vector|array|list|stack|deque|queue
+                |(?:unordered_)?map|(?:unordered_)?set
+                |string|iostream|regex|smatch
+                |algorithm|functional
+            )\b</string>
+            <key>name</key>
+            <string>support.type.c</string>
         </dict>
 <!--------------------------------------
     Storage Type Template - C++
@@ -299,7 +362,7 @@
         </dict>
         <dict>
             <key>match</key>
-            <string>\b(friend|explicit|virtual)\b</string>
+            <string>\b(friend|explicit)\b</string>
             <key>name</key>
             <string>storage.modifier.c++</string>
         </dict>
@@ -332,50 +395,70 @@
         </dict>
         <dict>
             <key>match</key>
-            <string>\b(override|final|noexcept)\b</string>
+            <string>\b(override|final|noexcept|virtual)\b</string>
             <key>name</key>
-            <string>storage.modifier.c++</string>
+            <string>storage.modifier.c++ support.flag.c++</string>
         </dict>
 
-<!-----------------------------------------------
-    Constant Other Variable Mac Classic C - C
------------------------------------------------->
-        <dict>
-            <key>comment</key>
-            <string>common C constant naming idiom -- kConstantVariable</string>
-            <key>match</key>
-            <string>\bk[A-Z]\w*\b</string>
-            <key>name</key>
-            <string>constant.other.variable.mac-classic.c</string>
-        </dict>
-<!------------------------------------------------------
-    Variable Other Readwrite Global Mac Classic C - C
-------------------------------------------------------->
-        <dict>
-            <key>match</key>
-            <string>\bg[A-Z]\w*\b</string>
-            <key>name</key>
-            <string>variable.other.readwrite.global.mac-classic.c</string>
-        </dict>
-<!---------------------------------------------------------
-    Variable Other Readwrite Static Mac Classic C - C
---------------------------------------------------------->
-        <dict>
-            <key>match</key>
-            <string>\bs[A-Z]\w*\b</string>
-            <key>name</key>
-            <string>variable.other.readwrite.static.mac-classic.c</string>
-        </dict>
 <!-------------------------------------------
     Variable Other Readwrite Member - C++
---------------------------------------------->
+    Saevon: Adds prefix captures
+------------------------------------------- -->
         <dict>
-            <key>comment</key>
-            <string>common C++ instance var naming idiom -- fMemberName</string>
             <key>match</key>
-            <string>\b(f|m)[A-Z]\w*\b</string>
+            <string>\b((?:e|f|i|g|s|v)(?:(?=[A-Z])|_))([A-Za-z0-9_]+)\b</string>
             <key>name</key>
-            <string>variable.other.readwrite.member.c++</string>
+            <string>variable.other.readwrite.c++</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>support.flag.variable.c++</string>
+                </dict>
+            </dict>
+        </dict>
+        <dict>
+            <key>match</key>
+            <string>\b((?:p)(?:(?=[A-Z])|_))([A-Za-z0-9_]+)\b</string>
+            <key>name</key>
+            <string>variable.other.pointer.c++</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>support.flag.variable.c++</string>
+                </dict>
+            </dict>
+        </dict>
+        <dict>
+            <key>match</key>
+            <string>\b((?:c)(?:(?=[A-Z])|_))([A-Za-z0-9_]+)\b</string>
+            <key>name</key>
+            <string>variable.other.constant.c++</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>support.flag.variable.c++</string>
+                </dict>
+            </dict>
+        </dict>
+        <dict>
+            <key>match</key>
+            <string>\b((?:m)(?:(?=[A-Z])|_))([A-Za-z0-9_]+)\b</string>
+            <key>name</key>
+            <string>variable.other.member.c++</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>support.flag.variable.c++</string>
+                </dict>
+            </dict>
         </dict>
 <!----------------------------
     Variable Language - C++
@@ -412,6 +495,15 @@
             <string>\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\b</string>
             <key>name</key>
             <string>constant.numeric.c</string>
+        </dict>
+<!--------------------------------------
+    Saevon: Constant stdio
+---------------------------------------->
+        <dict>
+            <key>match</key>
+            <string>\b(cout|cin|cerr|endl)\b</string>
+            <key>name</key>
+            <string>constant.language.c</string>
         </dict>
 <!--------------------------------------
     Support Type System Types - C
@@ -464,33 +556,39 @@
 ----------------------------------------------------->
         <dict>
             <key>match</key>
-            <string>\w+\:\:\w+\*</string>
+            <string>\w+\:\:\w+\*+</string>
             <key>name</key>
-            <string>pointer.ccpp</string>
+            <string>pointer.ccpp variable.other.pointer.ccpp</string>
         </dict>
         <dict>
             <key>match</key>
-            <string>\*\(\w+\)</string>
+            <string>\*+\(\w+\)</string>
             <key>name</key>
-            <string>pointer.ccpp</string>
+            <string>pointer.ccpp variable.other.pointer.ccpp</string>
         </dict>
         <dict>
             <key>match</key>
-            <string>\(\w+\)\*</string>
+            <string>\(\w+\)\*+</string>
             <key>name</key>
-            <string>pointer.ccpp</string>
+            <string>pointer.ccpp variable.other.pointer.ccpp</string>
         </dict>
         <dict>
             <key>match</key>
-            <string>\w+\*</string>
+            <string>\w+\*+</string>
             <key>name</key>
-            <string>pointer.ccpp</string>
+            <string>pointer.ccpp variable.other.pointer.ccpp</string>
         </dict>
         <dict>
             <key>match</key>
-            <string>\*\w+</string>
+            <string>\*+\w+</string>
             <key>name</key>
-            <string>pointer.ccpp</string>
+            <string>pointer.ccpp variable.other.pointer.ccpp</string>
+        </dict>
+        <dict>
+            <key>match</key>
+            <string>\w+(?=->)</string>
+            <key>name</key>
+            <string>pointer.ccpp variable.other.pointer.ccpp</string>
         </dict>
         <!-- Saevon: Added variable pointer -->
         <!--
@@ -501,12 +599,49 @@
             <string>pointer.ccpp</string>
         </dict>
         -->
-        <!-- Adds pointer classes -->
+
+
+
+        <!-- Saevon: Adds Namespaces classes -->
         <dict>
             <key>match</key>
-            <string>\b(shared_ptr|weak_ptr|auto_ptr|unique_ptr)\b</string>
-            <key>name</key>
-            <string>pointer.ccpp</string>
+            <string>\b(?:(std)(::))?\b</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>support.module.ccpp</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.ccpp</string>
+                </dict>
+            </dict>
+        </dict>
+        <!-- Saevon: Adds pointer classes -->
+        <dict>
+            <key>match</key>
+            <string>\b(?:(std)(::))?(shared_ptr|weak_ptr|auto_ptr|unique_ptr)\b(?=\s*&lt;)</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>support.module.ccpp</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.ccpp</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>pointer.ccpp</string>
+                </dict>
+            </dict>
         </dict>
 
 <!---------------------------------------------------
@@ -514,7 +649,7 @@
 ----------------------------------------------------->
         <dict>
             <key>match</key>
-            <string>\&\w+</string>
+            <string>\&?\&\w+</string>
             <key>name</key>
             <string>address.ccpp</string>
         </dict>
@@ -573,16 +708,19 @@
         </dict>
         <dict>
             <key>match</key>
-            <string>\w+(?=\:\:)</string>
-            <key>name</key>
-            <string>meta.function.c entity.name.function.c</string>
-        </dict>
-        <dict>
-            <key>match</key>
             <string>(?&lt;=\:\:)\w+</string>
             <key>name</key>
             <string>meta.function.c entity.name.function.c</string>
         </dict>
+        <!-- Saevon: Removes bad syntax
+                This would highlight the left side (usually a class/module) as a function
+        <dict>
+            <key>match</key>
+            <string>\w+(?=\:\:)</string>
+            <key>name</key>
+            <string>meta.function.c entity.name.function.c</string>
+        </dict>
+        -->
 <!--------------------------------------
     Logical Operator - CCpp
 ---------------------------------------->
@@ -923,7 +1061,7 @@
         <dict>
             <key>begin</key>
             <string>(?x)
-                ^\s*\#\s*(define)\s+             # define
+                ^\s*(\#)\s*(define)\s+             # define
                 ((?&lt;id&gt;[a-zA-Z_][a-zA-Z0-9_]*))  # macro name
                 (?:                              # and optionally:
                     (\()                         # an open parenthesis
@@ -940,29 +1078,34 @@
                 <key>1</key>
                 <dict>
                     <key>name</key>
-                    <string>keyword.control.import.define.c</string>
+                    <string>keyword.operator.preprocessor.c</string>
                 </dict>
                 <key>2</key>
                 <dict>
                     <key>name</key>
-                    <string>entity.name.function.preprocessor.c</string>
+                    <string>keyword.control.import.define.c</string>
                 </dict>
-                <key>4</key>
+                <key>3</key>
                 <dict>
                     <key>name</key>
-                    <string>punctuation.definition.parameters.c</string>
+                    <string>entity.name.function.preprocessor.c</string>
                 </dict>
                 <key>5</key>
                 <dict>
                     <key>name</key>
+                    <string>punctuation.definition.parameters.c</string>
+                </dict>
+                <key>6</key>
+                <dict>
+                    <key>name</key>
                     <string>variable.parameter.preprocessor.c</string>
                 </dict>
-                <key>7</key>
+                <key>8</key>
                 <dict>
                     <key>name</key>
                     <string>punctuation.separator.parameters.c</string>
                 </dict>
-                <key>8</key>
+                <key>9</key>
                 <dict>
                     <key>name</key>
                     <string>punctuation.definition.parameters.c</string>
@@ -1019,10 +1162,15 @@
 ---------------------------------------->
         <dict>
             <key>begin</key>
-            <string>^\s*#\s*(include|import)\b\s+</string>
+            <string>^\s*(#)\s*(include|import)\b\s+</string>
             <key>captures</key>
             <dict>
                 <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.preprocessor.c</string>
+                </dict>
+                <key>2</key>
                 <dict>
                     <key>name</key>
                     <string>keyword.control.import.include.c</string>
@@ -1034,6 +1182,35 @@
             <string>meta.preprocessor.c.include</string>
             <key>patterns</key>
             <array>
+                <dict>
+                    <key>match</key>
+                    <string>(?x)(&lt;)(
+                        vector|array|list|stack|deque|queue
+                        |(?:unordered_)?map|(?:unordered_)?set
+                        |string|iostream|regex
+                        |algorithm|functional
+                    )(&gt;)</string>
+                    <key>captures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>keyword.operator.include.begin.c</string>
+                        </dict>
+                        <key>2</key>
+                        <dict>
+                            <key>name</key>
+                            <string>support.module.c</string>
+                        </dict>
+                        <key>3</key>
+                        <dict>
+                            <key>name</key>
+                            <string>keyword.operator.include.end.c</string>
+                        </dict>
+                    </dict>
+                    <key>name</key>
+                    <string>string.quoted.other.lt-gt.include.c</string>
+                </dict>
                 <dict>
                     <key>match</key>
                     <string>(?&gt;\\\s*\n)</string>
@@ -1095,10 +1272,15 @@
 ---------------------------------------->
         <dict>
             <key>begin</key>
-            <string>^\s*#\s*(define|defined|elif|else|if|ifdef|ifndef|line|pragma|undef)\b</string>
+            <string>^\s*(#)\s*(define|defined|elif|else|if|ifdef|ifndef|line|pragma|undef)\b</string>
             <key>captures</key>
             <dict>
                 <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.preprocessor.c</string>
+                </dict>
+                <key>2</key>
                 <dict>
                     <key>name</key>
                     <string>keyword.control.import.c</string>
@@ -1477,7 +1659,7 @@
         <key>preprocessor-rule-other</key>
         <dict>
             <key>begin</key>
-            <string>^\s*(#\s*(if(n?def)?)\b.*?(?:(?=(?://|/\*))|$))</string>
+            <string>^\s*((#)\s*(if(n?def)?)\b.*?(?:(?=(?://|/\*))|$))</string>
             <key>captures</key>
             <dict>
                 <key>1</key>
@@ -1488,11 +1670,17 @@
                 <key>2</key>
                 <dict>
                     <key>name</key>
+                    <string>keyword.operator.preprocessor.c</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
                     <string>keyword.control.import.c</string>
                 </dict>
             </dict>
             <key>end</key>
-            <string>^\s*(#\s*(endif)\b)</string>
+            <string>^\s*((#)\s*(endif)\b)</string>
+
             <key>patterns</key>
             <array>
                 <dict>
