@@ -78,6 +78,7 @@ contexts:
     - include: function_declarations
     - include: expression_stuff
 
+
   comments:
     - match: '\{-#\s+'
       # GHC pragma
@@ -179,9 +180,9 @@ contexts:
 
   ctor_names:
     - match: '\b{{type_id}}\b'
-      scope: constant.other.haskell entity.name.constructor.haskell
+      scope: entity.name.constructor.haskell
     - match: \(\)
-      scope: constant.other.haskell entity.name.constructor.haskell
+      scope: entity.name.constructor.haskell
 
   data_declaration:
     - match: '^(\s*)(data|newtype)\s+({{type_id}})?'
@@ -252,6 +253,11 @@ contexts:
     - include: quasi_quote
     - include: ctor_names
 
+    # Saevon: Adds common "function" suffixes
+    - match: "{{var_id}}'+"
+      scope: meta.qualified-name.haskell variable.function.haskell
+
+
   field_signature:
     - match: (?=.*?((::)|\u2237))
       push:
@@ -287,13 +293,31 @@ contexts:
         - include: type
 
   function_declarations:
+    - include: lambda_function
     - include: function_signature
     - include: function_definition
     - include: infix_function_definition
     - include: fixity_declaration
 
+
+  # Saeovn: Adds lambdas
+  lambda_function:
+    - match: '(\\)({{var_id}})'
+      scope: meta.function.inline.haskell
+      captures:
+        1: keyword.operator.haskell
+        2: variable.parameter.haskell
+      push:
+      - meta_scope: meta.function.inline.haskell meta.function.parameters.haskell
+      - match: '{{var_id}}'
+        scope: variable.parameter.haskell
+      - match: ->
+        scope: keyword.operator.haskell
+        pop: true
+
   function_definition:
-    - match: '^\s*({{var_id}}|\({{type_id}}\))\s+(?![^\w\s=''"\(\[])(?=((([\w\.,''"_]+|(?:\w+\@)?\(.*\)|\[.*\])\s+)*))'
+    # Saevon: Removes prefix space, it fucks up a bunch of syntax stuff...
+    - match: '^({{var_id}}|\({{type_id}}\))\s+(?![^\w\s=''"\(\[])(?=((([\w\.,''"_]+|(?:\w+\@)?\(.*\)|\[.*\])\s+)*))'
       captures:
         1: entity.name.function.haskell
       push:
@@ -301,7 +325,19 @@ contexts:
         - match: '=|\|'
           scope: keyword.operator.haskell
           pop: true
+        - include: parameter_stuff
         - include: expression_stuff
+
+  # Saevon: Adds parameter matching
+  parameter_stuff:
+    - include: literals
+    - match: '\[\]'
+      scope: constant.language.haskell
+    - match: '\b({{type_id}}\.)+'
+      scope: storage.module.haskell entity.name.module.haskell
+    - match: '\b{{var_id}}\b'
+      scope: variable.parameter.haskell
+
 
   function_signature:
     - match: '^(\s*)(?!--)(?:(\(\W\)|[\w'']+)|[\(\[])(?=[\w'',\s\[\]\(\)]*(?:\s*)((?:::)|\u2237))'
@@ -442,6 +478,8 @@ contexts:
   module_name:
     - match: '({{type_id}})(\.{{type_id}})*'
       scope: storage.module.haskell
+
+
 
   pattern_function_definition:
     - match: '^\s*(?=\(.*\)|\[.*\]|([A-Z][\w'']*(\s+([\w\s,'']*|\(.*\)|\[.*\]|\{.*\}))*)\s*=)'
@@ -600,7 +638,6 @@ contexts:
           |negate
           |not
           |notElem
-          |null
           |odd
           |or
           |otherwise
@@ -668,5 +705,8 @@ contexts:
           |writeFile
           |zip(3|With3?)?
           )
+          # Saevon: Ensure "prime" functions (redefinitions) don't get marked as library functions
+          (?!')
           \b
       scope: support.function.prelude.haskell
+
