@@ -164,7 +164,7 @@ contexts:
         - include: type
 
   common_keywords:
-    - match: \b(where|case|of|let|in|default|do|mdo|if|then|else|rec|proc)\b
+    - match: \b(case|of|in|default|do|mdo|if|then|else|rec|proc)\b
       scope: keyword.other.haskell
 
   constructor_signature:
@@ -244,18 +244,38 @@ contexts:
       scope: constant.other.haskell entity.name.constructor.haskell
     - match: '\[\]'
       scope: constant.other.haskell entity.name.constructor.haskell
-    - match: '[@|!%$?~+:.\-*=</>\\∘→⇒⇔←⤙⇐≤≥≡⋮\[\]]+'
-      comment: In case this regex seems overly general, note that Haskell permits the definition of new operators which can be nearly any string of punctuation characters, such as $%^&*.
-      scope: keyword.operator.haskell
+
+    # Saevon: Ups common names before the "function-call" check
     - include: prelude_names
     - include: common_keywords
     - include: literals
+
+    # Saevon: Adds common "function" suffixes
+    - match: '({{var_id}})\s*(\$)'
+      captures:
+        1: variable.function.haskell
+        2: keyword.operator.haskell
+
+    # Saevon: Adds common "assignment" blocks
+    - match: '(let|where)(?:\s+({{var_id}})\s* (=))?'
+      captures:
+        1: keyword.declaration.haskell
+        2: variable.other.haskell
+        3: keyword.operator.assignment.haskell
+    - match: '({{var_id}})\s* (<-)'
+      captures:
+        1: variable.other.haskell
+        2: keyword.operator.assignment.haskell
+
+    - match: '[@|!%$?~+:.\-*=</>\\∘→⇒⇔←⤙⇐≤≥≡⋮\[\]]+'
+      comment: In case this regex seems overly general, note that Haskell permits the definition of new operators which can be nearly any string of punctuation characters, such as $%^&*.
+      scope: keyword.operator.haskell
     - include: quasi_quote
     - include: ctor_names
 
     # Saevon: Adds common "function" suffixes
     - match: "{{var_id}}'+"
-      scope: meta.qualified-name.haskell variable.function.haskell
+      scope: variable.function.haskell
 
 
   field_signature:
@@ -573,17 +593,13 @@ contexts:
     - match: |-
           (?x)
           \b
-          (False
+          (
           |EQ
           |GT
-          |Just
           |LT
           |Left
-          |Nothing
           |Right
-          |True
           |a(bs|c(osh?)|ll|n(d|y)|ppendFile|s(TypeOf|inh?)|tan[2h]?)
-          |break
           |c(eiling|o(mpare|n(cat(Map)?|st)|sh?)|urry|ycle)
           |decodeFloat
           |div
@@ -640,7 +656,6 @@ contexts:
           |notElem
           |odd
           |or
-          |otherwise
           |pi
           |pred
           |print
@@ -664,7 +679,6 @@ contexts:
           |rem
           |repeat
           |replicate
-          |return
           |reverse
           |round
           |scaleFloat
@@ -709,4 +723,32 @@ contexts:
           (?!')
           \b
       scope: support.function.prelude.haskell
+
+    # Saevon: Moves prelude "keywords" out
+    - match: |-
+        (?x)
+        \b(
+          otherwise
+          |break
+          |return
+        )\b
+      scope: keyword.control.conditional.haskell
+    # Saevon: Moves prelude "constants" out
+    - match: |-
+        (?x)
+        \b(
+          False
+          |True
+        )\b
+      scope: constant.language.haskell
+    - match: |-
+        (?x)
+        \b(
+          Just
+          |Nothing
+        )\b
+      scope: storage.type.haskell support.type.haskell
+
+
+
 
