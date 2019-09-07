@@ -5,8 +5,9 @@ name: R
 file_extensions:
   - R
   - r
-  - s
-  - S
+  # Saevon: These are used for Assembly files...
+  # - s
+  # - S
   - Rprofile
 scope: source.r
 
