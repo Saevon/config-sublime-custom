@@ -53,18 +53,18 @@ variables:
   strftime_spec: '(?:%(?:[aAwdbBGmyYHIpMSfzZjuUVWcxX%]|-[dmHIMSj]))'
 
   # Saevon: Adds builtin modules
-  builtin_import_modules: '(?x)\b(
+  builtin_import_modules: '(?x)\b(?:
     __future__
     |abc|ast|atexit|copy
     |asynchat|asyncio|asyncore|ctypes|multiprocessing|select|subprocess|io|threading
-    |argparse|optparse|cProfile|inspect|logging|os(\.path)?|platform|shlex|shutil|sys|setuptools|signal|socket|tempfile|textwrap|traceback|urllib|warnings
-    |binascii|c?math|c?string|datetime|decimal|enum|fractions|hashlib|random|re|time|uuid
-    |resource|stat|tarfile|pickle|json
+    |argparse|optparse|cProfile|inspect|importlib|logging|os(?:\.path)?|platform|shlex|sys|shutil|setuptools|signal|socket|tempfile|traceback|urllib|warnings
+    |binascii|c?math|c?string|codecs|datetime|decimal|enum|fractions|hashlib|random|re|time|uuid|textwrap
+    |resource|stat|tarfile|pickle|json|struct
     |typing|unittest(\.mock)?|mock|pdb
 
-    |collections(\.abc)?|contextlib|itertools|functools|queue
+    |collections(?:\.abc)?|contextlib|itertools|functools|queue
   )\b'
-  common_import_modules: '(?x)\b(
+  common_import_modules: '(?x)\b(?:
     requests|Crypto
   )\b'
   # Saevon: Adds special variables (commonly used variables)
