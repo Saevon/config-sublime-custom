@@ -28,7 +28,8 @@ file_extensions:
   - bashrc
   - profile
 first_line_match: '^#!.*\b(bash|zsh|sh|tcsh)|^#\s*-\*-[^*]*mode:\s*shell-script[^*]*-\*-'
-scope: source.shell
+# Make shellcheck work on this
+scope: source.shell.bash
 # Saevon: Adds start/end fixes for flags and keywords
 #    The start ones ignore / because you might have an absolute path
 variables:
