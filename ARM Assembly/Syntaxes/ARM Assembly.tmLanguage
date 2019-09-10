@@ -215,17 +215,113 @@
             <key>name</key>
             <string>storage.other.register</string>
         </dict>
+        <!-- Saevon: Adds object header -->
+        <dict>
+            <key>match</key>
+            <string>(?ix)
+                (\.type)\s+
+                ([a-z_]+[a-z0-9_]+)
+                \s*,\s*
+                (%object)
+            </string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.control.directive</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.language.function</string>
+                </dict>
+            </dict>
+        </dict>
+        <!-- Saevon: Adds function header -->
+        <dict>
+            <key>begin</key>
+            <string>(?ix)
+                (\.type)\s+
+                ([a-z_]+[a-z0-9_]+)
+                \s*,\s*
+                (%function)
+            </string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.control.directive</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>entity.name.function</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.language.function</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>(?ix)
+                (\.size)\s+
+                ([a-z_]+[a-z0-9_]+)
+                \s*,\s*
+                (.-)(\2)
+            </string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.control.directive</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>entity.name.function</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator</string>
+                </dict>
+                <key>4</key>
+                <dict>
+                    <key>name</key>
+                    <string>entity.name.function</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>meta.function</string>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>source.asm.arm</string>
+                </dict>
+            </array>
+        </dict>
+<!--         <dict>
+            <key>match</key>
+            <string>\.(?i)(type)\s*([a-z_]+[a-z0-9_]+)(?:, (%object))?
+ -->
+        <!-- -->
         <dict>
             <key>match</key>
             <string>\.(?i)(globl|global|macro|endm|purgem|if|elseif|else|endif|section|text|arm|align|balign|irp|rept|endr|req|unreq|error|short|func|endfunc|hidden|type|fpu|arch|code|altmacro|object_arch|word|int|string)(?-i)\b</string>
             <key>name</key>
             <string>keyword.control.directive</string>
         </dict>
+
         <dict>
             <key>match</key>
             <string>armv(2a?|3m?|4t?|5t?e?6(j|t2|zk?|-m)?|7v?e?(-(a|r|m))?|8-a(\+crc)?)</string>
             <key>name</key>
-            <string>keyword.control.arch.arm</string>
+            <string>constant.language.arch.arm</string>
         </dict>
         <dict>
             <key>begin</key>
