@@ -131,7 +131,7 @@ contexts:
     # - match: ''
     #   embed: scope:source.shell
     #   escape: '\n|$'
-    - include: scope:source.shell
+    - include: scope:source.shell.bash
       with_prototypes:
         - match: '$'
           pop: true
