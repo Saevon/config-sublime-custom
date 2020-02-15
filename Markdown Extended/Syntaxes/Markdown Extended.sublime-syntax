@@ -18,7 +18,8 @@ contexts:
     - match: (?i)(?=(title|template):)
       push: pelican-front-matter
     - match: ""
-      set: body
+      push: body
+
   # Saevon: Adds pelican like front-matter
   pelican-front-matter:
     - match: (?i)(?=(title|template):)
@@ -33,8 +34,7 @@ contexts:
           set: body
         - include: scope:source.yaml
     - match: ""
-      pop: true
-      set: body
+      push: body
   front-matter:
     # Saevon: Adds yaml ID
     - match: ^\s*---\s*(yaml)?$
@@ -67,8 +67,7 @@ contexts:
           pop: true
         - include: scope:source.json
     - match: ""
-      pop: true
-      set: body
+      push: body
   body:
     #--------------------------------------------------------------
     # Saevon: Adds my custom plugins
