@@ -1367,6 +1367,18 @@ contexts:
       scope: support.variable.magic.python
 
   docstrings:
+    # Saevon: Markdown comment blocks
+    - match: ^(?i)("""|''')
+      captures:
+        1: punctuation.definition.comment.begin.python
+        2: keyword.other.saevon.python
+      scope: comment.block.documentation.python
+      embed: scope:text.html.markdown
+      embed_scope: comment.block.documentation.python
+      escape: (\1)
+      escape_captures:
+        1: comment.block.documentation.python punctuation.definition.comment.end.python
+
     - match: ^\s*(?=(?i)(ur|ru|u|r)?("""|'''))
       push:
       - match: (?i)(u)?("""|''')
