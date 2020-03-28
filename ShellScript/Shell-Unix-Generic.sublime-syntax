@@ -105,6 +105,18 @@ contexts:
             1: punctuation.definition.logical-expression.shell
           pop: true
         - include: logical-expression
+        - include: logical-expression-bash
+        - include: main
+    - match: '(\[{1})'
+      captures:
+        1: punctuation.definition.logical-expression.shell
+      push:
+        - meta_scope: meta.scope.logical-expression.shell
+        - match: '(\]{1})'
+          captures:
+            1: punctuation.definition.logical-expression.shell
+          pop: true
+        - include: logical-expression
         - include: main
     - match: '(\({2})'
       captures:
@@ -409,10 +421,14 @@ contexts:
     - match: ;|&&|&|\|\|
       scope: keyword.operator.list.shell
   logical-expression:
-    - match: '=[=~]?|!=?|<|>|&&|\|\|'
+    - match: '=[=~]?|!=?|<|>'
       comment: do we want a special rule for ( expr )?
       scope: keyword.operator.logical.shell
     - match: '(?<!\S)-(nt|ot|ef|eq|ne|l[te]|g[te]|[a-hknoprstuwxzOGLSN])'
+      scope: keyword.operator.logical.shell
+  logical-expression-bash:
+    - match: '&&|\|\|'
+      comment: do we want a special rule for ( expr )?
       scope: keyword.operator.logical.shell
   loop:
     - match: '\b(for)\s+(?=\({2})'
@@ -595,9 +611,6 @@ contexts:
     # Saevon: Improved Spacing around assignment
     - match: '(?<=[a-zA-Z0-9_])(?: *)[+]?='
       scope: keyword.operator.assign.shell
-    # Saevon: Adds more operators
-    - match: '=='
-      scope: keyword.operator.logical.shell
 
     # Saevon: adds ~+ and ~-
     - match: (?<=\s|:|=|^)~[-+]?
@@ -714,7 +727,8 @@ contexts:
       scope: support.function.editor.shell
     - match: '{{start}}(defaults|launchctl|say|sips|xattr|pbcopy|pbpaste){{end}}'
       scope: support.function.osx.shell
-    - match: "[|!]"
+    # Saevon: removes ! which isn't a pipe operator
+    - match: '[|]'
       scope: keyword.operator.pipe.shell
     # Saevon: Adds more Rare binaries
     - match: '{{start}}(curl){{end}}'
