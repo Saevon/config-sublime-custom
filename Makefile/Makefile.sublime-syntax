@@ -82,8 +82,8 @@ contexts:
         - include: variable
         - include: comment
         - include: backtick
-        - include: shell
         - include: line_continuation
+        - include: shell
   directive:
     - match: ^\s*(ifeq|ifneq)\s*\(
       captures:
@@ -124,9 +124,9 @@ contexts:
         - meta_scope: string.interpolated.backtick.makefile
         - match: "`"
           pop: true
-        - include: scope:source.shell
+        - include: shell
+        # - include: scope:source.shell
   shell:
-    - include: line_continuation
     # Saevon: adds proper shell support
     # - match: ''
     #   embed: scope:source.shell
@@ -177,7 +177,11 @@ contexts:
           captures:
             1: punctuation.definition.variable.end.makefile
           pop: true
-        - include: shell
+        # Saevon: Adds shell support
+        - include: line_continuation
+        - match: ''
+          embed: scope:source.shell
+          escape: '(?=$|\))'
     - match: '(\$?\$\{)'
       captures:
         1: punctuation.definition.variable.begin.makefile
