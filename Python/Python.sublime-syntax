@@ -56,7 +56,7 @@ variables:
   builtin_import_modules: '(?x)\b(?:
     __future__
     |abc|ast|atexit|copy
-    |asynchat|asyncio|asyncore|ctypes|multiprocessing|select|subprocess|io|threading
+    |asynchat|asyncio|asyncore|ctypes|multiprocessing|select|subprocess|io|threading|concurrent(?:\.futures)?
     |argparse|optparse|cProfile|inspect|importlib|logging|os(?:\.path)?|platform|shlex|sys|shutil|setuptools|signal|socket|tempfile|traceback|urllib|warnings
     |binascii|c?math|c?string|codecs|datetime|decimal|enum|fractions|hashlib|random|re|time|uuid|textwrap
     |resource|stat|tarfile|pickle|json|struct
@@ -1104,10 +1104,10 @@ contexts:
     - match: |-
         (?x)\b(
           # 400
-          BadRequest|Unauthorized|Forbidden|NotFound|MethodNotAllowed|NotAcceptable|RequestTimeout|Conflict|Gone|LengthRequired|PreconditionFailed|RequestEntityTooLarge |RequestURITooLarge|UnsupportedMediaType|RequestedRangeNotSatisfiable|ExpectationFailed|ImATeapot|UnprocessableEntity|Locked|PreconditionRequired|TooManyRequests|RequestHeaderFieldsTooLarge|UnavailableForLegalReasons
+          BadRequest|Unauthorized|Forbidden|NotFound|MethodNotAllowed|NotAcceptable|RequestTimeout|Conflict|Gone|LengthRequired|PreconditionFailed|RequestEntityTooLarge|RequestURITooLarge|UnsupportedMediaType|RequestedRangeNotSatisfiable|ExpectationFailed|ImATeapot|UnprocessableEntity|Locked|PreconditionRequired|TooManyRequests|RequestHeaderFieldsTooLarge|UnavailableForLegalReasons
           # 500
-          |
           |InternalServerError|NotImplemented|BadGateway|ServiceUnavailable|HTTPUnicodeError|ClientDisconnected|SecurityError
+          |HTTPException
         )\b
       scope: entity.name.exception.python support.type.exception.python
     # Saevon: Adds asyncio Exceptions
